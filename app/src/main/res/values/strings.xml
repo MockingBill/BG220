@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">BG220</string>
+    <string name="record_file_upload">http://10.198.103.161:4001</string>
+    <array name="record_type">
+        <item>DEFAULT默认</item>
+        <item>MIC麦克</item>
+        <item>VOICE_UPLINK上行</item>
+        <item>VOICE_DOWNLINK下行</item>
+        <item>VOICE_CALL上下行</item>
+        <item>CAMCORDER相机</item>
+        <item>VOICE_RECOGNITION语音识别调整音</item>
+        <item>VOICE_COMMUNICATION对Voip调整</item>
+        <item>REMOTE_SUBMIX远端混合</item>
+        <item>UNPROCESSED原始麦克</item>
+    </array>
+
+</resources>

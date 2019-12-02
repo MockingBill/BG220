@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/ed"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/znntitle"
+            android:hint="请输入拨测被叫手机号"
+            android:textSize="20dp" />
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="开始测试" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/call_test"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="拨号测试" />
+        <Button
+            android:id="@+id/web_test"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:text="上网测试" />
+    </LinearLayout>
+
+        <!--导入的核查位置要求-->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="#4e4444" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:text="指标核查"
+            />
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="1dp"
+            android:background="#4e4444" />
+    </LinearLayout>
+
+        <com.illidan.dengqian.bg220.UI.MyScrollView
+            android:layout_width="match_parent"
+            android:scrollbars="vertical"
+            android:layout_marginLeft="5dp"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/znntitle"
+            android:layout_height="100dp">
+
+        <TextView
+            android:id="@+id/check_view"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:padding="5dp"
+            android:layout_height="match_parent"/>
+        </com.illidan.dengqian.bg220.UI.MyScrollView>
+
+
+        <!--现在的位置情况-->
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools"
+            android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+            <TextView
+
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:background="#4e4444" />
+            <TextView
+
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:text="测试报告"
+                />
+            <TextView
+
+                android:layout_marginTop="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="1dp"
+                android:background="#4e4444" />
+
+        </LinearLayout>
+
+
+        <com.illidan.dengqian.bg220.UI.MyScrollView
+            android:layout_width="match_parent"
+            android:scrollbars="vertical"
+            android:layout_marginLeft="5dp"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/znntitle"
+            android:layout_height="200dp">
+
+            <TextView
+                android:id="@+id/text_view"
+                android:layout_width="match_parent"
+                android:padding="5dp"
+                android:layout_height="match_parent"/>
+
+
+        </com.illidan.dengqian.bg220.UI.MyScrollView>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+        <ListView
+            android:visibility="gone"
+            android:id="@+id/list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
+
+
+
+
+</android.support.constraint.ConstraintLayout>
