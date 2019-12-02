@@ -34,7 +34,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.client.android.CaptureActivity;
+
 
 import com.illidan.dengqian.bg220.tool_bean.Myhander;
 import com.illidan.dengqian.bg220.tool_bean.voice.CallContentObserver;
@@ -476,9 +476,9 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     if (isSIM) {
                         //扫码
-                        Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-
-                        startActivityForResult(intent, REQUEST_CODE_SCAN);
+//                        Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
+//
+//                        startActivityForResult(intent, REQUEST_CODE_SCAN);
                     } else {
                         Toast.makeText(MainActivity.this, "请插入SIM卡", Toast.LENGTH_SHORT).show();
                     }
