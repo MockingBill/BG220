@@ -476,9 +476,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     if (isSIM) {
                         //扫码
-//                        Intent intent = new Intent(MainActivity.this, CaptureActivity.class);
-//
-//                        startActivityForResult(intent, REQUEST_CODE_SCAN);
+                        OptionsScannerActivity.gotoActivity(MainActivity.this);
+
                     } else {
                         Toast.makeText(MainActivity.this, "请插入SIM卡", Toast.LENGTH_SHORT).show();
                     }

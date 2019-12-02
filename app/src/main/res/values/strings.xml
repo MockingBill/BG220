@@ -13,5 +13,6 @@
         <item>REMOTE_SUBMIX远端混合</item>
         <item>UNPROCESSED原始麦克</item>
     </array>
+    <string name="title_activity_main2">Main2Activity</string>
 
 </resources>
