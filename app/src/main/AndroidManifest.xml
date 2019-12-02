@@ -68,7 +68,21 @@
         <activity
             android:name=".OptionsScannerActivity"
             android:label="@string/title_activity_main2"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
+
+        <activity
+            android:name=".picture.PickPictureTotalActivity"
+            android:label="选择相册" />
+        <activity
+            android:name=".picture.PickPictureActivity"
+            android:label="照片" />
+        <activity
+            android:name=".picture.BasicActivity"
+            android:label="基础" />
+
+
     </application>
 
 </manifest>

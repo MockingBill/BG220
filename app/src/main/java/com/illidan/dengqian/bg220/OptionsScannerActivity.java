@@ -1,8 +1,13 @@
 package com.illidan.dengqian.bg220;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -27,15 +32,15 @@ import android.widget.Toast;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 import com.google.zxing.client.result.ParsedResult;
+import com.illidan.dengqian.bg220.picture.PickPictureTotalActivity;
 import com.mylhyl.zxing.scanner.OnScannerCompletionListener;
 import com.mylhyl.zxing.scanner.ScannerOptions;
 import com.mylhyl.zxing.scanner.ScannerView;
 
 public class OptionsScannerActivity extends Activity implements OnScannerCompletionListener {
 
-    public static void gotoActivity(Activity activity) {
-        activity.startActivity(new Intent(activity, OptionsScannerActivity.class));
-    }
+
+
 
     private ScannerView mScannerView;
 
@@ -89,6 +94,14 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
                 .setTipTextColor(getResources().getColor(R.color.arc_blue))
 //                .setCameraZoomRatio(2)
         ;
+        findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                    PickPictureTotalActivity.gotoActivity(OptionsScannerActivity.this);
+
+            }
+        });
 
         mScannerView.setScannerOptions(builder.build());
     }
@@ -111,6 +124,11 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
         Toast.makeText(this, rawResult.getText(), Toast.LENGTH_SHORT).show();
         vibrate();
         mScannerView.restartPreviewAfterDelay(0);
+        Intent intent=new Intent();
+        intent.putExtra("result",rawResult.getText().toString());
+        setResult(MainActivity.RESULT_CODE_SCAN,intent);
+        finish();
+
     }
 
     private void vibrate() {
