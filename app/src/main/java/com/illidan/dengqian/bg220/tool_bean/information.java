@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,7 +64,7 @@ public class information {
     private String solveTime="";
 
 
-    private Map<String,ArrayList<String>> checkList=null;
+
 
 
 
@@ -105,13 +106,9 @@ public class information {
 
     }
 
-    public void setCheckList(Map<String, ArrayList<String>> checkList) {
-        this.checkList = checkList;
-    }
 
-    public Map<String, ArrayList<String>> getCheckList() {
-        return checkList;
-    }
+
+
 
     public void setSolveStatus(String solveStatus) {
         this.solveStatus = solveStatus;
@@ -218,6 +215,25 @@ public class information {
         return GPS;
     }
 
+    public String getGps(){
+        if(this.GPS.equals("")){
+            GPS="No Gps";
+        }else{
+            String pattern = "\\d+\\.\\d{0,5}";
+            Pattern r = Pattern.compile(pattern);
+            Matcher m = r.matcher(GPS);
+            List<String> arr=new ArrayList<>();
+            while (m.find()){
+                System.out.println(m.group());
+                arr.add(m.group());
+            }
+            if(arr.size()==2){
+                GPS=arr.get(0)+","+arr.get(1);
+            }
+        }
+        return GPS;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -229,6 +245,12 @@ public class information {
 
 
     public String getCollTime() {
+
+        Date date=new Date();
+        SimpleDateFormat dateformate=new SimpleDateFormat("yyyyMMddHHmmss");
+        String sim=dateformate.format(date);
+        collTime=sim;
+
         return collTime;
     }
 
@@ -248,7 +270,7 @@ public class information {
             case TelephonyManager.NETWORK_TYPE_1xRTT:
             case TelephonyManager.NETWORK_TYPE_IDEN:
             case TelephonyManager.NETWORK_TYPE_GSM:
-                return "2G网络";
+                return "2G";
             // 3G网络
             case TelephonyManager.NETWORK_TYPE_EVDO_A:
             case TelephonyManager.NETWORK_TYPE_UMTS:
@@ -262,12 +284,13 @@ public class information {
             case TelephonyManager.NETWORK_TYPE_TD_SCDMA:
 
 
-                return "3G网络";
+                return "3G";
             // 4G网络
             case TelephonyManager.NETWORK_TYPE_LTE:
             case 20:
-
-                return "4G网络";
+                return "4G";
+            case 88:
+                return "WIFI";
             case TelephonyManager.NETWORK_TYPE_UNKNOWN:
 
                 return "未知网络";
@@ -315,84 +338,12 @@ public class information {
         return flag;
     }
 
-    /**
-     * 调试程序时使用，可查看该对象的详细情况
-     * @return
-     */
 
 
-    public boolean isPassTest(){
-        if(show().toString().contains("失败")){
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-    public final static String[] title = {"ECI正确性", "TAC正确性", "信号强度正确性", "网站访问测试","通话测试"};
-    public final static int[] isright = {-1, -1, -1, -1,-1};
-    public String show(){
-        StringBuffer sb=new StringBuffer();
-        SimpleDateFormat s_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String time = s_format.format(new Date());
-        this.setCollTime(time);
-
-        String check_ECI=checkList.get("ECI").get(0);
-        String check_TAC=checkList.get("TAC").get(0);
-        sb.append("运营商信息:"+this.getNetworkOperatorName()+"\n");
-        sb.append("网络类型:"+this.getStrNetWork_type()+"\n");
-        sb.append("手机类型:"+this.getPhoneType()+"\n");
-        sb.append("位置:"+this.getAddress()+"\n");
-        sb.append("ECI:"+this.getECI()+"\n");
-        sb.append("TAC:"+this.getTAC()+"\n");
-        sb.append("BSSS:"+this.getBSSS()+"\n");
-        sb.append("GPS:"+this.getGPS()+"\n");
-        sb.append("详细位置:"+this.getAddress()+"\n");
-        sb.append("测试时间:"+this.getCollTime()+"\n");
-        sb.append("检查项目:"+this.getCheckList().toString()+"\n");
-
-        if(this.getECI().equals(check_ECI)){
-            sb.append("ECI:测试通过\n");
-            isright[0]=1;
-        }else{
-            sb.append("ECI:测试失败\n");
-            isright[0]=0;
-        }
-
-       if( this.TAC.equals(check_TAC)){
-           sb.append("TAC:测试通过\n");
-           isright[1]=1;
-       }else{
-           sb.append("TAC:测试失败\n");
-           isright[1]=0;
-       }
-
-
-        if (this.BSSS>-110){
-            sb.append("信号强度:测试通过\n");
-            isright[2]=1;
-        }else{
-            sb.append("信号强度:测试失败\n");
-            isright[2]=0;
-        }
-        //更新列表
-        MainActivity.listadpt.notifyDataSetChanged();
-        return sb.toString();
-    }
-
-
-    public String toJsonString() {
-        boolean falg=true;
-        for(int x:isright){
-            if( x==-1){
-                falg=false;
-                break;
-            }
-        }
+    public  static String[] title = {"网络类型正确性","ECI正确性", "TAC正确性","时间正确性","GPS正确性","网站访问测试","通话测试"};
+    public  static int[] isright = {-1, -1, -1, -1,-1,-1,-1};
 
 
 
 
-        return "";
-    }
 }

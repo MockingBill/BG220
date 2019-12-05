@@ -10,10 +10,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.illidan.dengqian.bg220.MainActivity;
+import com.illidan.dengqian.bg220.OptionsScannerActivity;
 import com.illidan.dengqian.bg220.R;
+import com.mylhyl.zxing.scanner.decode.QRDecode;
 
 
 import java.io.File;
@@ -174,11 +179,15 @@ public class PickPictureTotalActivity extends BasicActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         if (resultCode != Activity.RESULT_CANCELED && resultCode == Activity.RESULT_OK) {
             if (requestCode == PickPictureTotalActivity.REQUEST_CODE_SELECT_ALBUM) {
-                setResult(Activity.RESULT_OK, data);
+                Uri uri=intent.getData();
+
+
+                setResult(REQUEST_CODE_SELECT_PICTURE, intent);
+
                 finish();
             }
         }

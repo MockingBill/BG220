@@ -14,17 +14,18 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/ed"
-            android:layout_width="match_parent"
-            android:layout_height="28dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/znntitle"
-            android:hint="请输入拨测被叫手机号"
-            android:textSize="20dp" />
+        <!--<EditText-->
+            <!--android:id="@+id/ed"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="28dp"-->
+            <!--android:layout_marginLeft="5dp"-->
+            <!--android:layout_marginRight="5dp"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:background="@drawable/znntitle"-->
+            <!--android:hint="请输入拨测被叫手机号"-->
+            <!--android:textSize="20dp" />-->
         <Button
+            android:layout_marginTop="100px"
             android:id="@+id/start_button"
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -36,12 +37,14 @@
         android:orientation="horizontal">
         <Button
             android:id="@+id/call_test"
+            android:visibility="gone"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:enabled="false"
             android:text="拨号测试" />
         <Button
+            android:visibility="gone"
             android:id="@+id/web_test"
             android:layout_width="0dp"
             android:layout_height="50dp"

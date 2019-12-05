@@ -4,12 +4,14 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Path;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
 import android.app.Activity;
@@ -36,6 +38,7 @@ import com.illidan.dengqian.bg220.picture.PickPictureTotalActivity;
 import com.mylhyl.zxing.scanner.OnScannerCompletionListener;
 import com.mylhyl.zxing.scanner.ScannerOptions;
 import com.mylhyl.zxing.scanner.ScannerView;
+import com.mylhyl.zxing.scanner.decode.QRDecode;
 
 public class OptionsScannerActivity extends Activity implements OnScannerCompletionListener {
 
@@ -90,18 +93,18 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
 
                 .setScanMode(BarcodeFormat.QR_CODE)
                 .setTipText("扫码获取拨测要求")
-                .setTipTextSize(19)
+                .setTipTextSize(22)
                 .setTipTextColor(getResources().getColor(R.color.arc_blue))
 //                .setCameraZoomRatio(2)
         ;
         findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                     PickPictureTotalActivity.gotoActivity(OptionsScannerActivity.this);
-
             }
         });
+
+
 
         mScannerView.setScannerOptions(builder.build());
     }
@@ -121,11 +124,16 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
 
     @Override
     public void onScannerCompletion(Result rawResult, ParsedResult parsedResult, Bitmap barcode) {
-        Toast.makeText(this, rawResult.getText(), Toast.LENGTH_SHORT).show();
         vibrate();
         mScannerView.restartPreviewAfterDelay(0);
         Intent intent=new Intent();
-        intent.putExtra("result",rawResult.getText().toString());
+        if(rawResult!=null){
+            intent.putExtra("ResultQRCode",rawResult.getText().toString());
+        }else{
+            intent.putExtra("ResultQRCode","0");
+        }
+
+
         setResult(MainActivity.RESULT_CODE_SCAN,intent);
         finish();
 
@@ -134,5 +142,16 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
     private void vibrate() {
         Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         vibrator.vibrate(200);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==PickPictureTotalActivity.REQUEST_CODE_SELECT_PICTURE&&resultCode==PickPictureTotalActivity.REQUEST_CODE_SELECT_PICTURE){
+            String picturePath=data.getStringExtra(PickPictureTotalActivity.EXTRA_PICTURE_PATH);
+            QRDecode.decodeQR(picturePath, this);
+        }
+
+
     }
 }

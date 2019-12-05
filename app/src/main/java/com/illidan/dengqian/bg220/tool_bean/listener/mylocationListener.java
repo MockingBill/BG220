@@ -110,6 +110,7 @@ public class mylocationListener implements LocationListener {
                     super.run();
                     try {
                         String jj = SystemUtil.getBaiDuPosRequest(lonn, latt);
+
                         res = SystemUtil.formatAddress(jj);
 
                     } catch (Exception e) {

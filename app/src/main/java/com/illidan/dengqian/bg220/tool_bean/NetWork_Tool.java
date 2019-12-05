@@ -92,7 +92,7 @@ public class NetWork_Tool {
                 CellIdentityLte cellIdentity = cellInfoLte.getCellIdentity();
                 lac = cellIdentity.getTac();
                 cid = cellIdentity.getCi();
-                information.setNetwork_type(19);
+                information.setNetwork_type(TelephonyManager.NETWORK_TYPE_LTE);
                 String mcc=String.valueOf(cellIdentity.getMcc());
                 String mnc=String.valueOf(cellIdentity.getMnc());
                 operName=mccnc2oper(mcc,mnc);
@@ -115,8 +115,8 @@ public class NetWork_Tool {
         ConnectivityManager connectivityManager = (ConnectivityManager) MainActivity.context.getSystemService(MainActivity.CONNECTIVITY_SERVICE);
         NetworkInfo info= connectivityManager.getActiveNetworkInfo();
         if (info!= null&& info.getType() == ConnectivityManager.TYPE_WIFI) {
-            information.setNetwork_type(11);
-            return 11;
+            information.setNetwork_type(88);
+            return 88;
         }
 
         int networkType = OnlyTeleMan.getNetworkType();

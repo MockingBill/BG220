@@ -12,9 +12,16 @@ import android.provider.CallLog;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.PopupWindow;
 
 
 import com.illidan.dengqian.bg220.MainActivity;
+import com.illidan.dengqian.bg220.R;
+import com.illidan.dengqian.bg220.tool_bean.checkBean;
 import com.illidan.dengqian.bg220.tool_bean.information;
 
 import java.io.File;
@@ -109,15 +116,17 @@ public class CallContentObserver extends ContentObserver {
                             }
                             if (type == 2) {
                                 if (duration > 0) {
-                                    information.isright[4]=1;
+                                    information.isright[checkBean.checknum+1]=1;
 
                                     MainActivity.appendEd(MainActivity.cu_number+" "+state+" 通话成功,通话时长时长大于0", MainActivity.TEXT_VIEW);
                                 } else {
-                                    information.isright[4]=0;
+
+                                    information.isright[checkBean.checknum+1]=0;
                                     MainActivity.appendEd("通话失败,通话时长时长不大于0", MainActivity.TEXT_VIEW);
                                 }
                                 MainActivity.listadpt.notifyDataSetChanged();
                             }
+
 
                         }
                     }
@@ -131,4 +140,6 @@ public class CallContentObserver extends ContentObserver {
 
 
     }
+
+
 }
