@@ -39,7 +39,7 @@ public class FileUnit {
                 file.createNewFile();
             }
         } catch (Exception e) {
-            MainActivity.appendEd("创建文件异常："+e.toString(),MainActivity.TEXT_VIEW);
+
             e.printStackTrace();
         }
         return file;
@@ -54,7 +54,7 @@ public class FileUnit {
                 file.mkdir();
             }
         } catch (Exception e) {
-            MainActivity.appendEd("创建文件夹异常："+e.toString(),MainActivity.TEXT_VIEW);
+
             Log.i("error:", e + "");
         }
     }

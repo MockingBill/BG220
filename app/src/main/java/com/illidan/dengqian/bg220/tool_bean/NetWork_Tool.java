@@ -29,6 +29,7 @@ public class NetWork_Tool {
 
 
 
+
     /**
      * 启动网络测试
      */
@@ -55,6 +56,7 @@ public class NetWork_Tool {
     public NetWork_Tool(TelephonyManager tm){
         OnlyTeleMan=tm;
         information=new information();
+
     }
     public void CellRelation(){
         int cid=-1;
@@ -122,14 +124,21 @@ public class NetWork_Tool {
         int networkType = OnlyTeleMan.getNetworkType();
         return networkType;
     }
+
+
+
+
     public String mccnc2oper(String mcc,String mnc){
+
         if("460".equals(mcc)){
             if("0".equals(mnc)||"7".equals(mnc)||"2".equals(mnc)){
                 return "中国移动";
-            }else if("1".equals(mnc)||"6".equals(mnc)){
+            }else if("4".equals(mnc)){
+                return "中国航天移动卫星通信";
+            }
+
+            else if("1".equals(mnc)||"6".equals(mnc)){
                 return "中国联通";
-            }else if("20".equals(mnc)){
-                return "中国铁通";
             }else if("3".equals(mnc)||"11".equals(mnc)||"5".equals(mnc)){
                 return "中国电信";
             }else{
@@ -138,8 +147,6 @@ public class NetWork_Tool {
         }else{
             return mcc+mnc;
         }
-
-
     }
 
 

@@ -118,13 +118,14 @@ public class CallContentObserver extends ContentObserver {
                                 if (duration > 0) {
                                     information.isright[checkBean.checknum+1]=1;
 
-                                    MainActivity.appendEd(MainActivity.cu_number+" "+state+" 通话成功,通话时长时长大于0", MainActivity.TEXT_VIEW);
+
                                 } else {
 
                                     information.isright[checkBean.checknum+1]=0;
-                                    MainActivity.appendEd("通话失败,通话时长时长不大于0", MainActivity.TEXT_VIEW);
+
                                 }
                                 MainActivity.listadpt.notifyDataSetChanged();
+                                MainActivity.look_report.setEnabled(true);
                             }
 
 
@@ -135,7 +136,7 @@ public class CallContentObserver extends ContentObserver {
             }
             cur.close();
         } catch (Exception e) {
-            MainActivity.appendEd(e.toString(),MainActivity.TEXT_VIEW);
+
         }
 
 

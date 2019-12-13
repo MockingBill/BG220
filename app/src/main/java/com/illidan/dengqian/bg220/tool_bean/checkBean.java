@@ -6,8 +6,11 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class checkBean {
     public static final String TAG="checkBean_err";
@@ -29,6 +32,10 @@ public class checkBean {
 
     public static int checknum=0;
     public static List<String> checkItem=new ArrayList<>();
+    public static List<Map<String,String>> check_title=new ArrayList<>();
+
+    public static final  String lable_tag="lable";
+    public static final  String value_tag="value";
 
 
     public checkBean(){
@@ -36,15 +43,24 @@ public class checkBean {
     }
 
     public checkBean(String json){
+
         try{
             JSONObject jsonObject = new JSONObject(json);
             if(jsonObject.has("test_anme")){
                 this.test_name=jsonObject.get("test_name").toString();
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"测试名称");
+                map.put(value_tag,this.test_name);
+                check_title.add(map);
             }else{
                 this.test_name="";
             }
-            if(jsonObject.has("network_type")){
+            if(jsonObject.has("network_type")&&jsonObject.get("network_type").toString().equals("0")){
                 this.network_type=jsonObject.get("network_type").toString();
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"网络类型");
+                map.put(value_tag,this.network_type);
+                check_title.add(map);
 
             }else{
                 this.network_type="";
@@ -52,6 +68,12 @@ public class checkBean {
             if(jsonObject.has("gps_lon")&&jsonObject.has("gps_lat")){
                 this.gps_lon=jsonObject.get("gps_lon").toString();
                 this.gps_lat=jsonObject.get("gps_lat").toString();
+
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"GPS");
+                map.put(value_tag,this.gps_lon+","+this.gps_lat);
+                check_title.add(map);
+
             }else{
                 gps_lon="";
                 gps_lat="";
@@ -60,6 +82,10 @@ public class checkBean {
             if(jsonObject.has("ECI")){
 
                 this.ECI=jsonObject.get("ECI").toString();
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"ECI");
+                map.put(value_tag,this.ECI);
+                check_title.add(map);
             }else{
 
                 this.ECI="";
@@ -68,6 +94,10 @@ public class checkBean {
 
             if(jsonObject.has("TAC")){
                 this.TAC=jsonObject.get("TAC").toString();
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"TAC");
+                map.put(value_tag,this.TAC);
+                check_title.add(map);
             }else{
                 TAC="";
             }
@@ -76,6 +106,10 @@ public class checkBean {
             if(jsonObject.has("start_datetime")&&jsonObject.has("end_datetime")){
                 this.start_datetime=jsonObject.get("start_datetime").toString();
                 this.end_datetime=jsonObject.get("end_datetime").toString();
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"测试时间");
+                map.put(value_tag,this.start_datetime+"-"+this.end_datetime);
+                check_title.add(map);
             }else{
                 start_datetime="";
                 end_datetime="";
@@ -85,17 +119,36 @@ public class checkBean {
 
             if(jsonObject.has("to_number")){
                 setTo_number(jsonObject.get("to_number").toString());
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"被叫号码");
+                map.put(value_tag,this.to_number);
+                check_title.add(map);
+
             }else{
                 setTo_number("10086");
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"被叫号码");
+                map.put(value_tag,this.to_number);
+                check_title.add(map);
             }
+
 
 
 
 
             if(jsonObject.has("url")){
                 setUrl(jsonObject.get("url").toString());
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"测试网址");
+                map.put(value_tag,this.url);
+                check_title.add(map);
             }else{
-                setUrl("");
+                setUrl("https://www.baidu.com,https://weixin.qq.com/");
+                Map<String,String> map=new HashMap<String, String>();
+                map.put(lable_tag,"测试网址");
+                map.put(value_tag,this.url);
+                check_title.add(map);
+
             }
 
 
@@ -127,6 +180,8 @@ public class checkBean {
         /**
          * 网络类型核查
          */
+
+
 
         if(isOK(this.network_type) && !this.network_type.equals("0")){
 
@@ -170,14 +225,17 @@ public class checkBean {
         if(isOK(this.start_datetime) && isOK(this.end_datetime)){
 
             start_datetime=start_datetime.replaceAll("T"," ");
-            long start_long = Long.valueOf(start_datetime.replaceAll("[-\\s:]",""));
+            BigInteger start_int = new BigInteger(start_datetime.replaceAll("[-\\s:]","")+"00");
 
             end_datetime=end_datetime.replaceAll("T"," ");
-            long end_long = Long.valueOf(end_datetime.replaceAll("[-\\s:]",""));
+            BigInteger end_int = new BigInteger(end_datetime.replaceAll("[-\\s:]","")+"00");
 
-            long curr_long = Long.valueOf(current.getCollTime());
-            System.out.println();
-            if (curr_long-start_long>0&&end_long-curr_long>0){
+            BigInteger curr_int = new BigInteger(current.getCollTime());
+
+            int one=curr_int.subtract(start_int).compareTo(BigInteger.ZERO);
+            int two=end_int.subtract(curr_int).compareTo(BigInteger.ZERO);
+
+            if (one>=0&&two>=0){
                 setDatetime_ok(1);
             }else{
                 setDatetime_ok(0);

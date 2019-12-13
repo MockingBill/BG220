@@ -83,7 +83,7 @@ public class PcmToWavUtil {
             new Handler(MainActivity.context.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    MainActivity.appendEd(warm_text,MainActivity.TEXT_VIEW);
+
                     Looper.loop();
                 }
             });

@@ -19,59 +19,46 @@ import java.util.regex.Pattern;
 public class information {
 
     //记录ID
-    private String ID="";
+    private String ID = "";
 
     // LAC，Location Area Code，位置区域码；
-    private String TAC="";
+    private String TAC = "";
 
     //ID，cellID，基站编号；
-    private String ECI="";
+    private String ECI = "";
 
     //BSSS，Base station signal strength，基站信号强度。
     private int BSSS;
 
     //当前GPS定位
-    private String GPS="";
+    private String GPS = "";
 
     //手机号码
-    private String phoneNumber="";
+    private String phoneNumber = "";
 
     //手机品牌型号
-    private String phoneType="";
+    private String phoneType = "";
 
 
     //采集时间
-    private String collTime="";
+    private String collTime = "";
 
     //地理未知
-    private  String address="";
-
-
-
+    private String address = "";
 
 
     //网络类型
-    private int network_type=0;
+    private int network_type = 0;
 
 
+    private String NetworkOperatorName = "";
+
+    private String solveStatus = "";
+
+    private String solveTime = "";
 
 
-
-    private String NetworkOperatorName="";
-
-    private String solveStatus="";
-
-    private String solveTime="";
-
-
-
-
-
-
-
-
-
-    public information(String ID, String TAC, String ECI, int BSSS, String GPS, String phoneNumber, String phoneType,  String collTime,  String NetworkOperatorName) {
+    public information(String ID, String TAC, String ECI, int BSSS, String GPS, String phoneNumber, String phoneType, String collTime, String NetworkOperatorName) {
         this.ID = ID;
         this.TAC = TAC;
         this.ECI = ECI;
@@ -82,10 +69,11 @@ public class information {
 
         this.collTime = collTime;
 
-        this.NetworkOperatorName=NetworkOperatorName;
+        this.NetworkOperatorName = NetworkOperatorName;
     }
+
     public information(information in) {
-        this.ID=in.getID();
+        this.ID = in.getID();
         this.TAC = in.getTAC();
         this.ECI = in.getECI();
         this.BSSS = in.getBSSS();
@@ -95,19 +83,16 @@ public class information {
 
         this.collTime = in.collTime;
 
-        this.NetworkOperatorName=in.getNetworkOperatorName();
+        this.NetworkOperatorName = in.getNetworkOperatorName();
 
-        this.address=in.getAddress();
-        this.solveStatus=in.getSolveStatus();
-        this.solveTime=in.getSolveTime();
+        this.address = in.getAddress();
+        this.solveStatus = in.getSolveStatus();
+        this.solveTime = in.getSolveTime();
     }
 
-    public information(){
+    public information() {
 
     }
-
-
-
 
 
     public void setSolveStatus(String solveStatus) {
@@ -173,11 +158,9 @@ public class information {
     }
 
 
-
     public void setCollTime(String collTime) {
         this.collTime = collTime;
     }
-
 
 
     public String getID() {
@@ -197,40 +180,18 @@ public class information {
     }
 
     public String getGPS() {
-        if(this.GPS.equals("")){
-            GPS="No Gps";
+        if (GPS.equals("")){
+            return "(-1,-1)";
         }else{
-            String pattern = "\\d+\\.\\d{0,5}";
-            Pattern r = Pattern.compile(pattern);
-            Matcher m = r.matcher(GPS);
-            List<String> arr=new ArrayList<>();
-            while (m.find()){
-                System.out.println(m.group());
-                arr.add(m.group());
-            }
-            if(arr.size()==2){
-                GPS="("+arr.get(0)+","+arr.get(1)+")";
-            }
+            return "("+GPS+")";
         }
-        return GPS;
-    }
 
-    public String getGps(){
-        if(this.GPS.equals("")){
-            GPS="No Gps";
-        }else{
-            String pattern = "\\d+\\.\\d{0,5}";
-            Pattern r = Pattern.compile(pattern);
-            Matcher m = r.matcher(GPS);
-            List<String> arr=new ArrayList<>();
-            while (m.find()){
-                System.out.println(m.group());
-                arr.add(m.group());
-            }
-            if(arr.size()==2){
-                GPS=arr.get(0)+","+arr.get(1);
-            }
+    }
+    public String getGps() {
+        if (GPS.equals("")){
+            return "-1,-1";
         }
+
         return GPS;
     }
 
@@ -252,6 +213,15 @@ public class information {
         collTime=sim;
 
         return collTime;
+    }
+    public String getCollTime2() {
+
+        Date date=new Date();
+        SimpleDateFormat dateformate=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String sim=dateformate.format(date);
+
+
+        return sim;
     }
 
 
@@ -296,19 +266,20 @@ public class information {
                 return "未知网络";
             default:{
                 String res="默认";
-                try{
-                    Class<?> threeclazz=Class.forName("android.telephony.TelephonyManager");
-
-                    Method getNetType=threeclazz.getMethod("getNetworkClass",Integer.class);
-                    res =getNetType.invoke(null,network_type).toString();
-                }catch(Exception e){
-                    Log.e("info",e.toString());
-
-                }finally {
-                    return res;
-                }
+//                try{
+//                    Class<?> threeclazz=Class.forName("android.telephony.TelephonyManager");
+//
+//                    Method getNetType=threeclazz.getMethod("getNetworkClass",Integer.class);
+//                    res =getNetType.invoke(null,network_type).toString();
+//                }catch(Exception e){
+//                    Log.e("info",e.toString());
+//
+//                }finally {
+//                    return res;
+//                }
 
             }
+            return "未知";
         }
     }
 
@@ -340,8 +311,8 @@ public class information {
 
 
 
-    public  static String[] title = {"网络类型正确性","ECI正确性", "TAC正确性","时间正确性","GPS正确性","网站访问测试","通话测试"};
-    public  static int[] isright = {-1, -1, -1, -1,-1,-1,-1};
+    public  static String[] title = {};
+    public  static int[] isright = {};
 
 
 

@@ -3,6 +3,7 @@ package com.illidan.dengqian.bg220;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Path;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -57,31 +58,12 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
 
         mScannerView.setOnScannerCompletionListener(this);
 
-//        mScannerView.toggleLight(true);
+
 
         ScannerOptions.Builder builder = new ScannerOptions.Builder();
         builder
                 .setFrameStrokeColor(Color.RED)
                 .setFrameStrokeWidth(1.5f)
-//                .setFrameSize(256, 256)
-//                .setFrameCornerLength(22)
-//                .setFrameCornerWidth(2)
-//                .setFrameCornerColor(0xff06c1ae)
-//                .setFrameCornerInside(true)
-
-//                .setLaserLineColor(0xff06c1ae)
-//                .setLaserLineHeight(18)
-
-//                .setLaserStyle(ScannerOptions.LaserStyle.RES_LINE,R.mipmap.wx_scan_line)
-
-//                .setLaserStyle(ScannerOptions.LaserStyle.RES_GRID, R.mipmap.zfb_grid_scan_line)//网格图
-//                .setFrameCornerColor(0xFF26CEFF)//支付宝颜色
-
-//                .setScanFullScreen(true)
-
-//                .setFrameHide(false)
-//                .setFrameCornerHide(false)
-//                .setLaserMoveFullScreen(false)
 
                 .setViewfinderCallback(new ScannerOptions.ViewfinderCallback() {
                     @Override
@@ -100,14 +82,25 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
         findViewById(R.id.button4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                     PickPictureTotalActivity.gotoActivity(OptionsScannerActivity.this);
+
+            }
+        });
+        findViewById(R.id.toggleButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mScannerView.toggleLight(!isFlaOpen);
             }
         });
 
 
 
+
         mScannerView.setScannerOptions(builder.build());
     }
+    public static boolean isFlaOpen=false;
 
 
     @Override
@@ -133,7 +126,7 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
             intent.putExtra("ResultQRCode","0");
         }
 
-
+        mScannerView.toggleLight(false);
         setResult(MainActivity.RESULT_CODE_SCAN,intent);
         finish();
 

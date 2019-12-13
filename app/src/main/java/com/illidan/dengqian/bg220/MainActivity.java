@@ -39,9 +39,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-
 import com.illidan.dengqian.bg220.tool_bean.Myhander;
 import com.illidan.dengqian.bg220.tool_bean.checkBean;
+import com.illidan.dengqian.bg220.tool_bean.checkListAdapteer;
 import com.illidan.dengqian.bg220.tool_bean.voice.CallContentObserver;
 import com.illidan.dengqian.bg220.tool_bean.NetWork_Tool;
 import com.illidan.dengqian.bg220.tool_bean.SystemUtil;
@@ -68,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
      * 常量与静态基本量声明区
      */
     private static final String TAG = "MainActivity";
-    //显示在哪区域常量
-    public static final int TEXT_VIEW = 1;
-    public static final int CHECK_VIEW = 2;
+
+
+
     //扫码回调常量
     public static final int REQUEST_CODE_SCAN = 1;
     public static final int RESULT_CODE_SCAN = 1;
@@ -85,18 +85,19 @@ public class MainActivity extends AppCompatActivity {
      * UI组件声明区
      */
 
-    //通话测试
-    Button call_test = null;
+
     //整体测试开关
+    public TextView check_title_lable=null;
     Button startOrStop_test = null;
-    //上网测试
-    Button web_test = null;
-    //现废弃
-    public static TextView text_view = null;
-    //现废弃
-    public static TextView check_view = null;
+
+
+    //查看报告
+    public static Button look_report = null;
+
+
     //任务列表
     private ListView mListView;
+    private ListView checkListView;
     //消息传递
     public static Myhander myhander;
     public static Message msg;
@@ -123,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
      */
     //列表适配器
     public static listAdapteer listadpt;
+    public static checkListAdapteer checklistadpt;
     //MainActive上下文
     public static Context context;
     //手机状态管理类
@@ -161,22 +163,9 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.CAMERA,
             Manifest.permission.INTERNET,
             Manifest.permission.VIBRATE,
+
     };
 
-
-    public static void appendEd(String showcontent, int panle_id) {
-        if (panle_id == 1) {
-            if (MainActivity.text_view != null) {
-                MainActivity.text_view.append("\n" + showcontent);
-            }
-        } else if (panle_id == 2) {
-            if (MainActivity.check_view != null) {
-                MainActivity.check_view.append("\n" + showcontent);
-            }
-        }
-
-
-    }
 
 
 
@@ -189,19 +178,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        call_test = (Button) findViewById(R.id.call_test);
         startOrStop_test = (Button) findViewById(R.id.start_button);
-        web_test = (Button) findViewById(R.id.web_test);
 
-        text_view = (TextView) findViewById(R.id.text_view);
-        check_view = (TextView) findViewById(R.id.check_view);
+        look_report = (Button) findViewById(R.id.look_report);
+
+
+        check_title_lable=(TextView)findViewById(R.id.check_title_lable);
 
         mListView = (ListView) findViewById(R.id.list);
-
         listadpt = new listAdapteer();
         mListView.setAdapter(listadpt);
         listadpt.notifyDataSetChanged();
+
+
+        checkListView=(ListView)findViewById(R.id.check_list);
+        checklistadpt=new checkListAdapteer();
+        checkListView.setAdapter(checklistadpt);
+        checklistadpt.notifyDataSetChanged();
         context = getApplicationContext();
+
+        check_title_lable.setVisibility(View.GONE);
+        checkListView.setVisibility(View.GONE);
 
         initPermission();
     }
@@ -215,10 +212,10 @@ public class MainActivity extends AppCompatActivity {
                 telMag.listen(listenerSign, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
                 telMag.listen(listenerNetwork, PhoneStateListener.LISTEN_DATA_CONNECTION_STATE);
             } catch (Exception e) {
-               Log.e(TAG,e.toString());
+                Log.e(TAG, e.toString());
             }
         } else {
-            msg.what=Myhander.TOAST_ISSIM;
+            msg.what = Myhander.TOAST_ISSIM;
             myhander.sendMessage(msg);
         }
     }
@@ -235,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         for (String x : mPermissionList) {
-            Toast.makeText(MainActivity.context, "无法授权——"+x, Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.context, "无法授权——" + x, Toast.LENGTH_LONG).show();
         }
 
         if (mPermissionList.size() > 0) {//有权限没有通过，需要申请
@@ -249,94 +246,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-    /**
-     * 上网测试类
-     * @param scan_result
-     */
-    public void testNetWork(Map<String, ArrayList<String>> scan_result) {
-
-        mListView.setVisibility(View.VISIBLE);
-        net_tool.start();
-
-        net_tool.information.setGPS(SystemUtil.getGPSLocation());
-        ArrayList<String> url_list = scan_result.get("url_list");
-        /**
-         * 如果扫码得到的list不为空则使用扫码得到的url
-         */
-        if (url_list.size() > 0) {
-            urlList = url_list.toArray(new String[url_list.size()]);
-        }
-
-
-
-
-        new Thread() {
-            boolean network_test = true;
-
-            @Override
-            public void run() {
-                try {
-                    Log.e(SystemUtil.TAG, "开始GET");
-
-
-                    for (final String url : urlList) {
-                        if (SystemUtil.SendGetRequest(url)) {
-                            new Handler(context.getMainLooper()).post(new Runnable() {
-                                @Override
-                                public void run() {
-
-                                    appendEd(url + "访问通过", TEXT_VIEW);
-                                    Looper.loop();
-                                }
-                            });
-                        } else {
-                            new Handler(context.getMainLooper()).post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    network_test = false;
-                                    appendEd(url + "访问失败", TEXT_VIEW);
-                                    Looper.loop();
-                                }
-                            });
-                        }
-                    }
-
-
-
-                    new Handler(context.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (network_test) {
-                                information.isright[3] = 1;
-                                MainActivity.listadpt.notifyDataSetChanged();
-
-                            } else {
-                                information.isright[3] = 0;
-                                MainActivity.listadpt.notifyDataSetChanged();
-
-                            }
-
-                        }
-                    });
-
-
-                } catch (Exception e) {
-                    Log.e(SystemUtil.TAG, e.toString());
-                }
-
-            }
-        }.start();
-
-    }
-
     /**
      * 逻辑组件初始化
      */
 
     public void init() {
-        myhander=new Myhander();
+        myhander = new Myhander();
         msg = new Message();
         telMag = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         net_tool = new NetWork_Tool(telMag);
@@ -354,20 +269,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
         locationManager.requestLocationUpdates(locationProvider, 1000, 10, mylocationListener);
-        call_test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    Class<TelephonyManager> c = TelephonyManager.class;
-                    Method mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
-                    mthEndCall.setAccessible(true);
-                    CallPhone();
-                } catch (Exception e) {
-                    Log.e("MediaPlayer", e.toString());
-                }
-            }
-
-        });
 
 
         startOrStop_test.setOnClickListener(new View.OnClickListener() {
@@ -376,27 +277,35 @@ public class MainActivity extends AppCompatActivity {
                 if (isInTest) {
                     isInTest = false;
                     startOrStop_test.setText("开始测试");
-                    call_test.setEnabled(false);
-                    web_test.setEnabled(false);
-                    for(int i=0;i<information.isright.length;i++){
-                        information.isright[i]=-1;
+                    /**
+                     * 清空面板
+                     */
+                    checkBean.check_title.clear();
+                    checkBean.checkItem.clear();
+                    checkBean.checknum=0;
+                    checklistadpt.notifyDataSetChanged();
+                    check_title_lable.setVisibility(View.GONE);
+                    checkListView.setVisibility(View.GONE);
+
+
+                    look_report.setEnabled(false);
+                    for (int i = 0; i < information.isright.length; i++) {
+                        information.isright[i] = -1;
                     }
+
+                    information.title = new String[0];
+                    information.isright = new int[0];
                     listadpt.notifyDataSetChanged();
                     mListView.setVisibility(View.GONE);
 
-                    new Thread(){
+                    new Thread() {
                         @Override
                         public void run() {
                             super.run();
-                            try{
+                            try {
 
-                                /**
-                                 * 上传测试报告
-                                 */
-
-
-                            }catch(Exception e){
-                                Log.e(TAG,e.toString());
+                            } catch (Exception e) {
+                                Log.e(TAG, e.toString());
                             }
                         }
                     }.start();
@@ -404,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
                     if (isSIM) {
                         //扫码
                         Intent intent = new Intent(MainActivity.this, OptionsScannerActivity.class);
-                        startActivityForResult(intent,REQUEST_CODE_SCAN);
+                        startActivityForResult(intent, REQUEST_CODE_SCAN);
 
                     } else {
                         Toast.makeText(MainActivity.this, "请插入SIM卡", Toast.LENGTH_SHORT).show();
@@ -412,38 +321,34 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        web_test.setOnClickListener(new View.OnClickListener() {
+
+
+        look_report.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isInTest){
-                    testNetWork(check_info);
-                }
-
+                showPopWindowns();
             }
         });
     }
 
 
-
-    public void startTest(){
-        if(isInTest){
+    public void startTest() {
+        if (isInTest) {
             mListView.setVisibility(View.VISIBLE);
             net_tool.start();
-            net_tool.information.setGPS(SystemUtil.getGPSLocation());
 
 
-            if(checkbean.getUrl()!=null&&checkbean.getUrl().contains(",")){
-                String more[]=checkbean.getUrl().split(",");
-                for(int i=0;i<more.length;i++){
-                    more[i]=more[i];
+            if (checkbean.getUrl() != null && checkbean.getUrl().contains(",")) {
+                String more[] = checkbean.getUrl().split(",");
+                for (int i = 0; i < more.length; i++) {
+                    more[i] = more[i];
                 }
-                if(more.length>0){
-                    urlList=more;
+                if (more.length > 0) {
+                    urlList = more;
                 }
-            }else if(checkbean.getUrl()!=null&&!"".equals(checkbean.getUrl())){
-                urlList[0]=checkbean.getUrl();
+            } else if (checkbean.getUrl() != null && !"".equals(checkbean.getUrl())) {
+                urlList[0] = checkbean.getUrl();
             }
-
 
 
 
@@ -452,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
              */
             new Thread() {
                 boolean network_test = true;
+
                 @Override
                 public void run() {
                     try {
@@ -461,8 +367,6 @@ public class MainActivity extends AppCompatActivity {
                                 new Handler(context.getMainLooper()).post(new Runnable() {
                                     @Override
                                     public void run() {
-
-                                        appendEd(url + "访问通过", TEXT_VIEW);
                                         Looper.loop();
                                     }
                                 });
@@ -471,64 +375,64 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         network_test = false;
-                                        appendEd(url + "访问失败", TEXT_VIEW);
                                         Looper.loop();
                                     }
                                 });
                             }
                         }
-
+                        checkBean.checknum=0;
+                        checkBean.checkItem.clear();
                         checkbean.check(net_tool.information);
-
-
-
-                        int []flag=new int[checkBean.checknum+2];
-                        for(int i=0;i<flag.length;i++){
-                            flag[i]=-1;
+                        String ti[] = new String[checkBean.checknum + 2];
+                        for (int i = 0; i < checkBean.checkItem.size(); i++) {
+                            ti[i] = checkBean.checkItem.get(i);
                         }
-                        information.isright=flag;
+                        ti[checkBean.checknum] = "URL测试正确性";
+                        ti[checkBean.checknum + 1] = "电话拨打正确性";
+                        information.title = ti;
 
-                        String ti[]=new String[checkBean.checknum+2];
-                        for(int i=0;i<checkBean.checkItem.size();i++){
-                            ti[i]=checkBean.checkItem.get(i);
+
+                        int[] flag = new int[checkBean.checknum + 2];
+                        for (int i = 0; i < flag.length; i++) {
+                            flag[i] = -1;
                         }
-                        ti[checkBean.checknum]="URL测试正确性";
-                        ti[checkBean.checknum+1]="电话拨打正确性";
-                        information.title=ti;
+                        information.isright = flag;
+
+
+
                         new Handler(context.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
-                                int n=0;
+                                int n = 0;
 
-                                for(int i=0;i<checkBean.checkItem.size();i++){
-                                    String key=checkBean.checkItem.get(i);
-                                    switch(key){
-                                        case "网络类型核查":{
-                                            information.isright[n]=checkbean.getNetwork_type_ok();
+                                for (int i = 0; i < checkBean.checkItem.size(); i++) {
+                                    String key = checkBean.checkItem.get(i);
+                                    switch (key) {
+                                        case "网络类型核查": {
+                                            information.isright[n] = checkbean.getNetwork_type_ok();
                                             n++;
                                             break;
                                         }
 
-                                        case "ECI核查":{
-                                            information.isright[n]=checkbean.getECI_ok();
+                                        case "ECI核查": {
+                                            information.isright[n] = checkbean.getECI_ok();
                                             n++;
                                             break;
                                         }
 
-                                        case "TAC核查":
-                                        {
-                                            information.isright[n]=checkbean.getTAC_ok();
+                                        case "TAC核查": {
+                                            information.isright[n] = checkbean.getTAC_ok();
                                             n++;
                                             break;
                                         }
-                                        case "时间范围核查":{
-                                            information.isright[n]=checkbean.getDatetime_ok();
+                                        case "时间范围核查": {
+                                            information.isright[n] = checkbean.getDatetime_ok();
                                             n++;
                                             break;
                                         }
 
-                                        case "Gps位置核查":{
-                                            information.isright[n]=checkbean.getGps_ok();
+                                        case "Gps位置核查": {
+                                            information.isright[n] = checkbean.getGps_ok();
                                             n++;
                                             break;
                                         }
@@ -538,14 +442,13 @@ public class MainActivity extends AppCompatActivity {
                                 }
 
                                 if (network_test) {
-                                    Log.e("执行测试","531");
+
                                     information.isright[checkBean.checknum] = 1;
                                     MainActivity.listadpt.notifyDataSetChanged();
                                 } else {
                                     information.isright[checkBean.checknum] = 0;
                                     MainActivity.listadpt.notifyDataSetChanged();
                                 }
-
 
 
                                 Looper.loop();
@@ -558,6 +461,9 @@ public class MainActivity extends AppCompatActivity {
                         Method mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
                         mthEndCall.setAccessible(true);
                         CallPhone();
+                        if (MainActivity.net_tool.information != null) {
+
+                        }
 
                     } catch (Exception e) {
                         Log.e(SystemUtil.TAG, e.toString());
@@ -565,46 +471,39 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }.start();
-
-
-
-
-
-//            /**
-//             * 拨号测试
-//             */
-//            try {
-//
-//            } catch (Exception e) {
-//                Log.e("MediaPlayer", e.toString());
-//            }
         }
-
-
-
 
 
     }
 
-    public static checkBean checkbean=null;
+    public static checkBean checkbean = null;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_CODE_SCAN) {
-            String checkJsonStr=data.getExtras().getString("ResultQRCode");
-            if(checkJsonStr!=null&&!checkJsonStr.equals("0")){
+            String checkJsonStr = data.getExtras().getString("ResultQRCode");
+            if (checkJsonStr != null && !checkJsonStr.equals("0")) {
                 Toast.makeText(MainActivity.this, checkJsonStr, Toast.LENGTH_SHORT).show();
-                checkbean=new checkBean(checkJsonStr);
+                checkbean = new checkBean(checkJsonStr);
                 //UI动态设置
                 startOrStop_test.setText("停止测试");
+                check_title_lable.setVisibility(View.VISIBLE);
+                checkListView.setVisibility(View.VISIBLE);
                 isInTest = true;
-                call_test.setEnabled(true);
-                web_test.setEnabled(true);
+
+
+                /**
+                 * 设置检查项目列表
+                 */
+                checklistadpt.notifyDataSetChanged();
+
+
                 /**
                  * 开始测试
                  */
-                startTest();
-            }else{
+                //startTest();
+            } else {
                 Toast.makeText(MainActivity.this, "扫码失败", Toast.LENGTH_SHORT).show();
             }
         }
@@ -612,7 +511,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void CallPhone() {
         // 拨号：激活系统的拨号组件
-        String number=MainActivity.checkbean.getTo_number();
+        String number = MainActivity.checkbean.getTo_number();
         if ("".equals(number)) {
             Toast.makeText(MainActivity.this, "没有手机号", Toast.LENGTH_SHORT).show();
         } else {
@@ -627,12 +526,134 @@ public class MainActivity extends AppCompatActivity {
 
     private View contentView;
     private PopupWindow popupWindow;
-    public void showPopWindowns(){
-        contentView=LayoutInflater.from(this).inflate(R.layout.window_layout,null);
-        popupWindow=new PopupWindow(contentView, FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, true);
+
+    public void showPopWindowns() {
+        contentView = LayoutInflater.from(this).inflate(R.layout.window_layout, null);
+        popupWindow = new PopupWindow(contentView, FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, true);
+        TextView ValueNetworkOperatorName = (TextView) contentView.findViewById(R.id.NetworkOperatorName);
+
+        TextView ValueECI = (TextView) contentView.findViewById(R.id.ValueECI);
+        TextView ValueTAC = (TextView) contentView.findViewById(R.id.ValueTAC);
+        TextView ValueBSSS = (TextView) contentView.findViewById(R.id.ValueBSSS);
+        TextView ValueGPS = (TextView) contentView.findViewById(R.id.ValueGPS);
+        TextView ValueNetWorkType = (TextView) contentView.findViewById(R.id.ValueNetWorkType);
+        TextView ValuePhonetype = (TextView) contentView.findViewById(R.id.ValuePhonetype);
+        TextView address=(TextView)contentView.findViewById(R.id.address);
+
+        TextView ValueCollTime = (TextView) contentView.findViewById(R.id.ValueCollTime);
+
+        Button singleUpload = (Button) contentView.findViewById(R.id.singleUpload);
+
+
+        if (checkBean.checkItem.contains("网络类型核查")) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("采集值:");
+            sb.append(String.valueOf(net_tool.information.getStrNetWork_type()) + "\r\n");
+            sb.append(" 核查值:");
+            sb.append(checkbean.getNetwork_type() + "\r\n");
+            if (checkbean.getNetwork_type_ok() == 1) {
+                sb.append(" 检查通过");
+            } else {
+                sb.append(" 检查不通过");
+            }
+            ValueNetWorkType.setText(sb.toString());
+        } else {
+            ValueNetWorkType.setText(String.valueOf(net_tool.information.getStrNetWork_type()));
+        }
+
+
+
+        if (checkBean.checkItem.contains("ECI核查")) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("采集值:");
+            sb.append(String.valueOf(net_tool.information.getECI()) + "\r\n");
+            sb.append(" 核查值:");
+            sb.append(checkbean.getECI() + "\r\n");
+            if (checkbean.getECI_ok() == 1) {
+                sb.append(" 检查通过");
+            } else {
+                sb.append(" 检查不通过");
+            }
+            ValueECI.setText(sb.toString());
+
+        } else {
+            ValueECI.setText(String.valueOf(net_tool.information.getECI()));
+        }
+
+        if (checkBean.checkItem.contains("TAC核查")) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("采集值:");
+            sb.append(String.valueOf(net_tool.information.getTAC()) + "\r\n");
+            sb.append(" 核查值:");
+            sb.append(checkbean.getTAC() + "\r\n");
+            if (checkbean.getTAC_ok() == 1) {
+                sb.append(" 检查通过");
+            } else {
+                sb.append(" 检查不通过");
+            }
+            ValueTAC.setText(sb.toString());
+
+        } else {
+            ValueTAC.setText(String.valueOf(net_tool.information.getTAC()));
+        }
+
+
+        if (checkBean.checkItem.contains("时间范围核查")) {
+            StringBuffer sb = new StringBuffer();
+            sb.append("采集值:");
+            sb.append(String.valueOf(net_tool.information.getCollTime2()) + "\r\n");
+            sb.append(" 核查值:");
+            sb.append(checkbean.getStart_datetime() + " 到 " + checkbean.getEnd_datetime() + "\r\n");
+            if (checkbean.getDatetime_ok() == 1) {
+                sb.append(" 检查通过");
+            } else {
+                sb.append(" 检查不通过");
+            }
+            ValueCollTime.setText(sb.toString());
+        } else {
+            ValueCollTime.setText(String.valueOf(net_tool.information.getCollTime()));
+        }
+
+
+        if (checkBean.checkItem.contains("Gps位置核查")) {
+
+            StringBuffer sb = new StringBuffer();
+            sb.append("采集值:");
+            sb.append(String.valueOf(net_tool.information.getGPS()) + "\r\n");
+            sb.append(" 核查值:");
+            sb.append("(" + checkbean.getGps_lon() + "," + checkbean.getGps_lat() + ")\r\n");
+            if (checkbean.getGps_ok() == 1) {
+                sb.append(" 检查通过");
+            } else {
+                sb.append(" 检查不通过");
+
+            }
+            ValueGPS.setText(sb.toString());
+        } else {
+            ValueGPS.setText(String.valueOf(net_tool.information.getGPS()));
+        }
+
+        address.setText(String.valueOf(net_tool.information.getAddress()));
+        ValueNetworkOperatorName.setText(String.valueOf(net_tool.information.getNetworkOperatorName()));
+        ValueBSSS.setText(String.valueOf(net_tool.information.getBSSS())+"dbm");
+        ValuePhonetype.setText(String.valueOf(net_tool.information.getPhoneType()));
+        singleUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+        View rootview = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
+        popupWindow.showAtLocation(rootview, Gravity.TOP, 0, 30);
+
+
     }
 
+    public void set_check_list(){
 
+    }
 
 
 }

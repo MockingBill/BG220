@@ -66,7 +66,7 @@ public class AudioRecordManager {
             }
             recordThread = null;
         } catch (Exception e) {
-            MainActivity.appendEd("线程销毁方法："+e.toString(),MainActivity.TEXT_VIEW);
+
             e.printStackTrace();
         } finally {
             recordThread = null;
@@ -83,7 +83,7 @@ public class AudioRecordManager {
         if (recordThread == null) {
             recordThread = new Thread(recordRunnable);
             recordThread.start();
-            MainActivity.appendEd("录音线程启动成功：",MainActivity.TEXT_VIEW);
+
         }
     }
 
@@ -126,7 +126,7 @@ public class AudioRecordManager {
                     }
                 }
             } catch (Exception e) {
-                MainActivity.appendEd("录音线程异常："+e.toString(),MainActivity.TEXT_VIEW);
+
                 e.printStackTrace();
             }
         }
@@ -164,7 +164,7 @@ public class AudioRecordManager {
             setPath(path);
             startThread();
         } catch (Exception e) {
-            MainActivity.appendEd("开始录音异常："+e.toString(),MainActivity.TEXT_VIEW);
+
             e.printStackTrace();
         }
     }
@@ -188,7 +188,7 @@ public class AudioRecordManager {
                 dos.close();
             }
         } catch (Exception e) {
-            MainActivity.appendEd("停止录音异常："+e.toString(),MainActivity.TEXT_VIEW);
+
             e.printStackTrace();
         }finally {
             Thread th= new Thread(new Runnable() {

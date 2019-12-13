@@ -16,6 +16,9 @@ import com.illidan.dengqian.bg220.tool_bean.SystemUtil;
  */
 
 public class mylocationListener implements LocationListener {
+    public static double  gps_lat=-1;
+    public static double gps_lon=-1;
+
 
     /**
      * 位置变化
@@ -24,9 +27,12 @@ public class mylocationListener implements LocationListener {
      */
     @Override
     public void onLocationChanged(Location location) {
-        getLocalion();
-        Toast.makeText(MainActivity.context, "位置更新", Toast.LENGTH_SHORT).show();
-
+        String gps=String.valueOf(location.getLongitude())+","+String.valueOf(location.getLatitude());
+        gps_lon=location.getLongitude();
+        gps_lat=location.getLatitude();
+        MainActivity.net_tool.information.setGPS(gps);
+        getLocalion(location.getLongitude(),location.getLatitude());
+        Toast.makeText(MainActivity.context, "位置更新为("+gps+")", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -61,6 +67,7 @@ public class mylocationListener implements LocationListener {
     @Override
     public void onProviderEnabled(String provider) {
         Toast.makeText(MainActivity.context, "GPS已开启", Toast.LENGTH_SHORT).show();
+
         getGPSLocation();
     }
 
@@ -88,20 +95,10 @@ public class mylocationListener implements LocationListener {
     public void onProviderDisabled(String provider) {
         Toast.makeText(MainActivity.context, "请打开GPS 否则无法定位", Toast.LENGTH_SHORT).show();
     }
-    public static int gps_lat=-1;
-    public static int gps_lon=-1;
 
 
-    public void getLocalion() {
-        String Gpsstr = getGPSLocation();
-        String Gps = Gpsstr.replaceAll("\\(|\\)", "").replaceAll("（", "").replaceAll("）", "");
-        String[] GpsArr = Gps.split(",");
 
-        if (GpsArr.length >= 2) {
-            gps_lat=Integer.valueOf(GpsArr[1]);
-            gps_lon=Integer.valueOf(GpsArr[0]);
-            final String latt = GpsArr[1];
-            final String lonn = GpsArr[0];
+    public void getLocalion(final double lonn,final double latt) {
             new Thread() {
                 public String res = "未知地址";
 
@@ -109,7 +106,7 @@ public class mylocationListener implements LocationListener {
                 public void run() {
                     super.run();
                     try {
-                        String jj = SystemUtil.getBaiDuPosRequest(lonn, latt);
+                        String jj = SystemUtil.getBaiDuPosRequest(String.valueOf(lonn), String.valueOf(latt));
 
                         res = SystemUtil.formatAddress(jj);
 
@@ -123,6 +120,6 @@ public class mylocationListener implements LocationListener {
             }.start();
         }
 
-    }
+
 
 }
