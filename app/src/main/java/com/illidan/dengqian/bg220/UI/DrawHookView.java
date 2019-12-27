@@ -49,7 +49,7 @@ public class DrawHookView extends View {
          */
         Paint paint = new Paint();
         //设置画笔颜色
-        paint.setColor(getResources().getColor(R.color.arc_blue));
+        paint.setColor(getResources().getColor(R.color.color_green));
         //设置圆弧的宽度
         paint.setStrokeWidth(5);
         //设置圆弧为空心

@@ -4,9 +4,9 @@
         <shape>
             <stroke
                 android:width="3px"
-                android:color="#bfbfbf" />
+                android:color="#fcfbfb" />
             <corners android:radius="0dp" />
-            <solid android:color="#6ade7b" />
+            <solid android:color="#2c9fde" />
         </shape>
     </item>
 </layer-list>

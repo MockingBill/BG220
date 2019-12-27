@@ -7,6 +7,7 @@
         android:id="@+id/check_label"
         android:background="@drawable/znnwincontent2"
         android:layout_width="100dp"
+        android:textColor="@color/color_fff"
         android:layout_height="match_parent"
         android:layout_weight="0.2"
         android:gravity="center" />
@@ -15,6 +16,7 @@
         android:background="@drawable/znnwincontent2"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:textColor="@color/color_fff"
         android:layout_weight="0.2"
         android:gravity="center" />
     <TextView
@@ -23,5 +25,6 @@
         android:layout_width="150dp"
         android:layout_height="match_parent"
         android:layout_weight="0.2"
+        android:textColor="@color/color_fff"
         android:gravity="center" />
 </LinearLayout>
