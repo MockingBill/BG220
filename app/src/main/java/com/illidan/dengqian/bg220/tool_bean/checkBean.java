@@ -43,6 +43,12 @@ public class checkBean {
     }
 
     public checkBean(String json){
+        Map<String,String> map1=new HashMap<String, String>();
+        map1.put(lable_tag,"测试项");
+        map1.put(value_tag,"要求值");
+        check_title.add(map1);
+
+
 
         try{
             JSONObject jsonObject = new JSONObject(json);

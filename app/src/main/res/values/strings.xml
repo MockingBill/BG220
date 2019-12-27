@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">BG220</string>
+    <string name="app_name">拨测助手</string>
     <string name="record_file_upload">http://10.198.103.161:4001</string>
+    <string name="refresh_cycle">4</string>
     <array name="record_type">
         <item>DEFAULT默认</item>
         <item>MIC麦克</item>

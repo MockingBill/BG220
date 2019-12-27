@@ -74,8 +74,31 @@ public class checkListAdapteer extends BaseAdapter {
         // 根据传入的数据进行修改
         TextView  check_label= view.findViewById(R.id.check_label);
         TextView  check_value=view.findViewById(R.id.check_value);
-        check_label.setText(checkBean.check_title.get(position).get(checkBean.lable_tag));
+        TextView current_value=view.findViewById(R.id.current_value);
+        String l=checkBean.check_title.get(position).get(checkBean.lable_tag);
+
+        check_label.setText(l);
         check_value.setText(checkBean.check_title.get(position).get(checkBean.value_tag));
+
+
+        if("网络类型".equals(l)){
+            current_value.setText(MainActivity.net_tool.information.getNetwork_type());
+        }else if("GPS".equals(l)){
+            current_value.setText(MainActivity.net_tool.information.getGPS());
+        }else if("ECI".equals(l)){
+            current_value.setText(MainActivity.net_tool.information.getECI());
+        }else if("TAC".equals(l)){
+            current_value.setText(MainActivity.net_tool.information.getTAC());
+        }else if("测试时间".equals(l)){
+            current_value.setText(MainActivity.net_tool.information.getCollTime2());
+        }else if("被叫号码".equals(l)){
+            current_value.setText("\u3000");
+        }else if("测试网址".equals(l)){
+            current_value.setText("\u3000");
+        }else if("测试项".equals(l)){
+            current_value.setText("当前值");
+        }
+
         return view;
     }
 }

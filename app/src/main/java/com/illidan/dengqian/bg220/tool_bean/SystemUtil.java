@@ -8,6 +8,8 @@ import android.location.Location;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.Toast;
 
 import com.illidan.dengqian.bg220.MainActivity;
 import com.illidan.dengqian.bg220.tool_bean.listener.mylocationListener;
@@ -224,6 +226,13 @@ public class SystemUtil {
             conn.disconnect();
             return false;
         }
+    }
+
+
+    public static void showToast(Context context,String text){
+        Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.TOP, 0, 0);
+        toast.show();
     }
 
 

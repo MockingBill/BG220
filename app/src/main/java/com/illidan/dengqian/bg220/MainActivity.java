@@ -2,6 +2,7 @@ package com.illidan.dengqian.bg220;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,6 +61,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.security.auth.login.LoginException;
 
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
     //查看报告
     public static Button look_report = null;
+    public Button start_test=null;
 
 
     //任务列表
@@ -182,8 +186,8 @@ public class MainActivity extends AppCompatActivity {
 
         look_report = (Button) findViewById(R.id.look_report);
 
-
-        check_title_lable=(TextView)findViewById(R.id.check_title_lable);
+        start_test=(Button) findViewById(R.id.start_test);
+        //check_title_lable=(TextView)findViewById(R.id.check_title_lable);
 
         mListView = (ListView) findViewById(R.id.list);
         listadpt = new listAdapteer();
@@ -197,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         checklistadpt.notifyDataSetChanged();
         context = getApplicationContext();
 
-        check_title_lable.setVisibility(View.GONE);
+        //check_title_lable.setVisibility(View.GONE);
         checkListView.setVisibility(View.GONE);
 
         initPermission();
@@ -232,15 +236,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         for (String x : mPermissionList) {
-            Toast.makeText(MainActivity.context, "无法授权——" + x, Toast.LENGTH_LONG).show();
+            SystemUtil.showToast(MainActivity.this, "无法授权——"+x);
+
         }
 
         if (mPermissionList.size() > 0) {//有权限没有通过，需要申请
             ActivityCompat.requestPermissions(this, permissionList, mRequestCode);
         } else {
-            Toast.makeText(MainActivity.context, "授权完成", Toast.LENGTH_LONG).show();
-
-
+            SystemUtil.showToast(MainActivity.this, "授权完成");
             init();
         }
     }
@@ -255,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         msg = new Message();
         telMag = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         net_tool = new NetWork_Tool(telMag);
+
         listenerSign = new myPhoneStateListener();
         listenerNetwork = new myPhoneStateListener();
         mylocationListener = new mylocationListener();
@@ -271,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(locationProvider, 1000, 10, mylocationListener);
 
 
+
         startOrStop_test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -280,15 +285,17 @@ public class MainActivity extends AppCompatActivity {
                     /**
                      * 清空面板
                      */
+                    destroyTimer();
                     checkBean.check_title.clear();
                     checkBean.checkItem.clear();
                     checkBean.checknum=0;
                     checklistadpt.notifyDataSetChanged();
-                    check_title_lable.setVisibility(View.GONE);
+                    //check_title_lable.setVisibility(View.GONE);
                     checkListView.setVisibility(View.GONE);
 
 
                     look_report.setEnabled(false);
+                    start_test.setEnabled(false);
                     for (int i = 0; i < information.isright.length; i++) {
                         information.isright[i] = -1;
                     }
@@ -316,12 +323,30 @@ public class MainActivity extends AppCompatActivity {
                         startActivityForResult(intent, REQUEST_CODE_SCAN);
 
                     } else {
-                        Toast.makeText(MainActivity.this, "请插入SIM卡", Toast.LENGTH_SHORT).show();
+
+                        SystemUtil.showToast(MainActivity.this, "请插入SIM卡");
                     }
                 }
             }
         });
 
+
+        start_test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if(isInTest){
+                    net_tool.start();
+                    startTest();
+                }else{
+                    SystemUtil.showToast(MainActivity.this, "当前不在测试中");
+
+                }
+
+
+            }
+        });
 
         look_report.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -329,6 +354,8 @@ public class MainActivity extends AppCompatActivity {
                 showPopWindowns();
             }
         });
+        net_tool.start();
+
     }
 
 
@@ -380,6 +407,20 @@ public class MainActivity extends AppCompatActivity {
                                 });
                             }
                         }
+
+
+
+
+                    } catch (Exception e) {
+                        Log.e(SystemUtil.TAG, e.toString());
+                        new Handler(context.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                SystemUtil.showToast(MainActivity.this, "网络测试失败");
+                                Looper.loop();
+                            }
+                        });
+                    }finally {
                         checkBean.checknum=0;
                         checkBean.checkItem.clear();
                         checkbean.check(net_tool.information);
@@ -457,16 +498,22 @@ public class MainActivity extends AppCompatActivity {
                         /**
                          * 拨号测试
                          */
-                        Class<TelephonyManager> c = TelephonyManager.class;
-                        Method mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
-                        mthEndCall.setAccessible(true);
-                        CallPhone();
-                        if (MainActivity.net_tool.information != null) {
+                        try{
+                            Class<TelephonyManager> c = TelephonyManager.class;
+                            Method mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
+                            mthEndCall.setAccessible(true);
+                            CallPhone();
+                        }catch (Exception e){
+                            new Handler(context.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    SystemUtil.showToast(MainActivity.this, "拨号测试失败");
+                                    Looper.loop();
+                                }
+                            });
 
                         }
 
-                    } catch (Exception e) {
-                        Log.e(SystemUtil.TAG, e.toString());
                     }
 
                 }
@@ -484,14 +531,15 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_CODE_SCAN) {
             String checkJsonStr = data.getExtras().getString("ResultQRCode");
             if (checkJsonStr != null && !checkJsonStr.equals("0")) {
-                Toast.makeText(MainActivity.this, checkJsonStr, Toast.LENGTH_SHORT).show();
+
                 checkbean = new checkBean(checkJsonStr);
                 //UI动态设置
                 startOrStop_test.setText("停止测试");
-                check_title_lable.setVisibility(View.VISIBLE);
+                //check_title_lable.setVisibility(View.VISIBLE);
                 checkListView.setVisibility(View.VISIBLE);
                 isInTest = true;
 
+                LunchTimer();
 
                 /**
                  * 设置检查项目列表
@@ -499,12 +547,10 @@ public class MainActivity extends AppCompatActivity {
                 checklistadpt.notifyDataSetChanged();
 
 
-                /**
-                 * 开始测试
-                 */
-                //startTest();
+                start_test.setEnabled(true);
             } else {
-                Toast.makeText(MainActivity.this, "扫码失败", Toast.LENGTH_SHORT).show();
+                SystemUtil.showToast(MainActivity.this, "扫码失败");
+
             }
         }
     }
@@ -513,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
         // 拨号：激活系统的拨号组件
         String number = MainActivity.checkbean.getTo_number();
         if ("".equals(number)) {
-            Toast.makeText(MainActivity.this, "没有手机号", Toast.LENGTH_SHORT).show();
+            SystemUtil.showToast(MainActivity.this, "没有手机号");
         } else {
             cu_number = number;
             Intent intent = new Intent(); // 意图对象：动作 + 数据
@@ -651,9 +697,62 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void set_check_list(){
+    /**
+     * 发布注册任务
+     */
+
+
+    public Timer timer=null;
+    public RefreshCheckList timetask=null;
+
+    public void LunchTimer(){
+        timer=new Timer();
+        timetask= new RefreshCheckList();
+        int refresh_cycle=Integer.valueOf(getString(R.string.refresh_cycle));
+        timer.schedule(timetask,0,1000*refresh_cycle);
 
     }
+
+
+    /**
+     * destory上次使用的 Timer
+     */
+    public void destroyTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        if (timetask != null) {
+            timetask.cancel();
+            timetask = null;
+        }
+    }
+
+    /**
+     * 周期性任务
+     * 采集网络信息更新核查列表
+     */
+
+    class RefreshCheckList extends TimerTask{
+        @Override
+        public void run() {
+
+            new Handler(context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    net_tool.start();
+                    checklistadpt.notifyDataSetChanged();
+                    Looper.loop();
+                }
+            });
+
+
+        }
+    }
+
+
+
+
 
 
 }

@@ -5,20 +5,23 @@
 
     <TextView
         android:id="@+id/check_label"
+        android:background="@drawable/znnwincontent2"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         android:layout_weight="0.2"
         android:gravity="center" />
     <TextView
         android:id="@+id/check_value"
+        android:background="@drawable/znnwincontent2"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.2"
         android:gravity="center" />
     <TextView
         android:id="@+id/current_value"
+        android:background="@drawable/znnwincontent2"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="0.2"
         android:gravity="center" />
 </LinearLayout>

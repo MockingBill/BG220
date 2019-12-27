@@ -6,6 +6,7 @@ import android.location.LocationProvider;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
 import com.illidan.dengqian.bg220.MainActivity;
 import com.illidan.dengqian.bg220.tool_bean.SystemUtil;
@@ -32,7 +33,9 @@ public class mylocationListener implements LocationListener {
         gps_lat=location.getLatitude();
         MainActivity.net_tool.information.setGPS(gps);
         getLocalion(location.getLongitude(),location.getLatitude());
-        Toast.makeText(MainActivity.context, "位置更新为("+gps+")", Toast.LENGTH_SHORT).show();
+
+        SystemUtil.showToast(MainActivity.context,"位置更新为"+MainActivity.net_tool.information.getGPS());
+
     }
 
     /**
@@ -50,11 +53,11 @@ public class mylocationListener implements LocationListener {
                 break;
             //GPS状态为服务区外时
             case LocationProvider.OUT_OF_SERVICE:
-                Toast.makeText(MainActivity.context, "当前GPS状态为服务区外状态", Toast.LENGTH_SHORT).show();
+                SystemUtil.showToast(MainActivity.context, "当前GPS状态为服务区外状态");
                 break;
             //GPS状态为暂停服务时
             case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                Toast.makeText(MainActivity.context, "当前GPS状态为暂停服务状态", Toast.LENGTH_SHORT).show();
+                SystemUtil.showToast(MainActivity.context, "当前GPS状态为暂停服务状态");
                 break;
         }
     }
@@ -66,8 +69,8 @@ public class mylocationListener implements LocationListener {
      */
     @Override
     public void onProviderEnabled(String provider) {
-        Toast.makeText(MainActivity.context, "GPS已开启", Toast.LENGTH_SHORT).show();
 
+        SystemUtil.showToast(MainActivity.context, "GPS已开启");
         getGPSLocation();
     }
 
@@ -93,7 +96,7 @@ public class mylocationListener implements LocationListener {
      */
     @Override
     public void onProviderDisabled(String provider) {
-        Toast.makeText(MainActivity.context, "请打开GPS 否则无法定位", Toast.LENGTH_SHORT).show();
+        SystemUtil.showToast(MainActivity.context, "请打开GPS 否则无法定位");
     }
 
 

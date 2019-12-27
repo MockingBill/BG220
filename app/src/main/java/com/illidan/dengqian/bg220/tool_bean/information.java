@@ -183,7 +183,12 @@ public class information {
         if (GPS.equals("")){
             return "(-1,-1)";
         }else{
-            return "("+GPS+")";
+
+            String []g=GPS.split(",");
+            String lon=String.format("%.3f",Double.valueOf(g[0]));
+            String lat=String.format("%.3f",Double.valueOf(g[1]));
+
+            return "("+lon+","+lat+")";
         }
 
     }

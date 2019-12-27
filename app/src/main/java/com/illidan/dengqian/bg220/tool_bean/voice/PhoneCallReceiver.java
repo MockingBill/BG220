@@ -8,6 +8,7 @@ import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 import com.illidan.dengqian.bg220.MainActivity;
+import com.illidan.dengqian.bg220.tool_bean.SystemUtil;
 import com.illidan.dengqian.bg220.tool_bean.voice.AudioRecordManager;
 
 /**
@@ -74,7 +75,8 @@ public class PhoneCallReceiver extends BroadcastReceiver {
     public static boolean isRing=false;
 
     protected void onOutgoingCallStarted(Context context,String number){
-        Toast.makeText(context, "去电开始", Toast.LENGTH_LONG).show();
+        SystemUtil.showToast(context, "去电开始");
+
 
 
         if (!AudioRecordManager.isStart){
@@ -87,7 +89,7 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         }
         }
     protected void onOutgoingCallEnded(Context context,String number){
-        Toast.makeText(context, "去电结束", Toast.LENGTH_LONG).show();
+        SystemUtil.showToast(context, "去电结束");
         if(AudioRecordManager.isStart){
             AudioRecordManager.getInstance().stopRecord();
         }
@@ -101,16 +103,19 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         Intent workIntent = new Intent(context, MainActivity.class);
         workIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(workIntent);
-        Toast.makeText(context,"来电开始",Toast.LENGTH_LONG).show();
+        SystemUtil.showToast(context, "来电开始");
+
     }
     protected void onIncomingCallEnded(Context context,String number){
-        Toast.makeText(context, "来电结束", Toast.LENGTH_LONG).show();
+        SystemUtil.showToast(context, "来电结束");
+
     }
     protected void onIncomingCallReceived(Context context,String number){
-        Toast.makeText(context, "来电接受", Toast.LENGTH_LONG).show();
+        SystemUtil.showToast(context, "接听来电");
+
     }
     protected void onIncomingCallAnswered(Context context, String number) {
-        Toast.makeText(context, "来电答复", Toast.LENGTH_LONG).show();
+        SystemUtil.showToast(context, "来电答复");
     }
 
 
