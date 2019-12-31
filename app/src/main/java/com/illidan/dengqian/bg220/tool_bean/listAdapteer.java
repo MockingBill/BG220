@@ -61,18 +61,15 @@ public class listAdapteer  extends BaseAdapter{
         // 根据传入的数据进行修改
         TextView text = view.findViewById(R.id.text);
         text.setText(information.title[position]);
-
         DrawErrView errview=view.findViewById(R.id.err);
         DrawHookView hookView=view.findViewById(R.id.right);
         DrawRadiusView radius=view.findViewById(R.id.wait);
-
         switch (information.isright[position]){
             case -1:{
                 radius.setVisibility(View.VISIBLE);
                 hookView.setVisibility(View.GONE);
                 errview.setVisibility(View.GONE);
                 break;
-
             }
             case 1:{
                 radius.setVisibility(View.GONE);
@@ -89,8 +86,6 @@ public class listAdapteer  extends BaseAdapter{
             }
 
         }
-
-
         return view;
     }
 }

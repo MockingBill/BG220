@@ -177,6 +177,7 @@ public class information {
 
     public int getBSSS() {
         return BSSS;
+
     }
 
     public String getGPS() {

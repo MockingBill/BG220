@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isInTest) {
                     isInTest = false;
-                    startOrStop_test.setText("开始测试");
+                    startOrStop_test.setText("扫描测试要求");
                     /**
                      * 清空面板
                      */
@@ -290,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
                     checkBean.checkItem.clear();
                     checkBean.checknum=0;
                     checklistadpt.notifyDataSetChanged();
-                    //check_title_lable.setVisibility(View.GONE);
                     checkListView.setVisibility(View.GONE);
 
 
@@ -358,10 +357,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    boolean  network_test = true;
 
     public void startTest() {
+        network_test=true;
         if (isInTest) {
-            mListView.setVisibility(View.VISIBLE);
             net_tool.start();
 
 
@@ -373,151 +373,176 @@ public class MainActivity extends AppCompatActivity {
                 if (more.length > 0) {
                     urlList = more;
                 }
-            } else if (checkbean.getUrl() != null && !"".equals(checkbean.getUrl())) {
+            } else if (checkbean.getUrl() != null && !"".equals(checkbean.getUrl())&& !checkbean.getUrl().contains(",")) {
                 urlList[0] = checkbean.getUrl();
             }
-
-
 
             /**
              * 如果扫码得到的list不为空则使用扫码得到的url
              */
-            new Thread() {
-                boolean network_test = true;
+            Thread thread1=new Thread() {
+
 
                 @Override
                 public void run() {
-                    try {
-                        Log.e(SystemUtil.TAG, "开始GET");
-                        for (final String url : urlList) {
-                            if (SystemUtil.SendGetRequest(url)) {
-                                new Handler(context.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Looper.loop();
+                        try {
+                                for (final String url : urlList) {
+                                    if (SystemUtil.SendGetRequest(url)) {
+                                        new Handler(context.getMainLooper()).post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Looper.loop();
+                                            }
+                                        });
+                                    } else {
+                                        new Handler(context.getMainLooper()).post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                network_test = false;
+                                                Looper.loop();
+                                            }
+                                        });
                                     }
-                                });
-                            } else {
-                                new Handler(context.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        network_test = false;
-                                        Looper.loop();
-                                    }
-                                });
-                            }
-                        }
-
-
-
-
-                    } catch (Exception e) {
-                        Log.e(SystemUtil.TAG, e.toString());
-                        new Handler(context.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                SystemUtil.showToast(MainActivity.this, "网络测试失败");
-                                Looper.loop();
-                            }
-                        });
-                    }finally {
-                        checkBean.checknum=0;
-                        checkBean.checkItem.clear();
-                        checkbean.check(net_tool.information);
-                        String ti[] = new String[checkBean.checknum + 2];
-                        for (int i = 0; i < checkBean.checkItem.size(); i++) {
-                            ti[i] = checkBean.checkItem.get(i);
-                        }
-                        ti[checkBean.checknum] = "URL测试正确性";
-                        ti[checkBean.checknum + 1] = "电话拨打正确性";
-                        information.title = ti;
-
-
-                        int[] flag = new int[checkBean.checknum + 2];
-                        for (int i = 0; i < flag.length; i++) {
-                            flag[i] = -1;
-                        }
-                        information.isright = flag;
-
-
-
-                        new Handler(context.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                int n = 0;
-
-                                for (int i = 0; i < checkBean.checkItem.size(); i++) {
-                                    String key = checkBean.checkItem.get(i);
-                                    switch (key) {
-                                        case "网络类型核查": {
-                                            information.isright[n] = checkbean.getNetwork_type_ok();
-                                            n++;
-                                            break;
-                                        }
-
-                                        case "ECI核查": {
-                                            information.isright[n] = checkbean.getECI_ok();
-                                            n++;
-                                            break;
-                                        }
-
-                                        case "TAC核查": {
-                                            information.isright[n] = checkbean.getTAC_ok();
-                                            n++;
-                                            break;
-                                        }
-                                        case "时间范围核查": {
-                                            information.isright[n] = checkbean.getDatetime_ok();
-                                            n++;
-                                            break;
-                                        }
-
-                                        case "Gps位置核查": {
-                                            information.isright[n] = checkbean.getGps_ok();
-                                            n++;
-                                            break;
-                                        }
-
-                                    }
-
                                 }
-
-                                if (network_test) {
-
-                                    information.isright[checkBean.checknum] = 1;
-                                    MainActivity.listadpt.notifyDataSetChanged();
-                                } else {
-                                    information.isright[checkBean.checknum] = 0;
-                                    MainActivity.listadpt.notifyDataSetChanged();
-                                }
-
-
-                                Looper.loop();
-                            }
-                        });
-                        /**
-                         * 拨号测试
-                         */
-                        try{
-                            Class<TelephonyManager> c = TelephonyManager.class;
-                            Method mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
-                            mthEndCall.setAccessible(true);
-                            CallPhone();
-                        }catch (Exception e){
+                        } catch (Exception e) {
+                            Log.e(SystemUtil.TAG, e.toString());
+                            network_test=false;
                             new Handler(context.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    SystemUtil.showToast(MainActivity.this, "拨号测试失败");
+                                    SystemUtil.showToast(MainActivity.this, "网络测试失败");
                                     Looper.loop();
                                 }
                             });
-
                         }
 
-                    }
+
 
                 }
-            }.start();
+            };
+
+
+
+
+            Thread thread2=new Thread(){
+                @Override
+                public void run() {
+
+                    checkBean.checknum=0;
+                    checkBean.checkItem.clear();
+                    checkbean.check(net_tool.information);
+                    String ti[] = new String[checkBean.checknum + 2];
+                    for (int i = 0; i < checkBean.checkItem.size(); i++) {
+                        ti[i] = checkBean.checkItem.get(i);
+                    }
+                    ti[checkBean.checknum] = "URL测试正确性";
+                    ti[checkBean.checknum + 1] = "电话拨打正确性";
+                    information.title = ti;
+
+
+                    int[] flag = new int[checkBean.checknum + 2];
+                    for (int i = 0; i < flag.length; i++) {
+                        flag[i] = -1;
+                    }
+                    information.isright = flag;
+
+
+
+                    new Handler(context.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            int n = 0;
+
+                            for (int i = 0; i < checkBean.checkItem.size(); i++) {
+                                String key = checkBean.checkItem.get(i);
+                                switch (key) {
+                                    case "网络类型核查": {
+                                        information.isright[n] = checkbean.getNetwork_type_ok();
+                                        n++;
+                                        break;
+                                    }
+
+                                    case "ECI核查": {
+                                        information.isright[n] = checkbean.getECI_ok();
+                                        n++;
+                                        break;
+                                    }
+
+                                    case "TAC核查": {
+                                        information.isright[n] = checkbean.getTAC_ok();
+                                        n++;
+                                        break;
+                                    }
+                                    case "时间范围核查": {
+                                        information.isright[n] = checkbean.getDatetime_ok();
+                                        n++;
+                                        break;
+                                    }
+
+                                    case "Gps位置核查": {
+                                        information.isright[n] = checkbean.getGps_ok();
+                                        n++;
+                                        break;
+                                    }
+                                    case "信号强度核查":{
+                                        information.isright[n] = checkbean.getBsss_ok();
+                                        n++;
+                                        break;
+                                    }
+
+                                }
+
+                            }
+
+                            if (network_test) {
+
+                                information.isright[checkBean.checknum] = 1;
+                                MainActivity.listadpt.notifyDataSetChanged();
+                            } else {
+                                information.isright[checkBean.checknum] = 0;
+                                MainActivity.listadpt.notifyDataSetChanged();
+                            }
+
+
+                            Looper.loop();
+                        }
+                    });
+                    /**
+                     * 拨号测试
+                     */
+                    try{
+                        Class<TelephonyManager> c = TelephonyManager.class;
+                        Method mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
+                        mthEndCall.setAccessible(true);
+                        CallPhone();
+                    }catch (Exception e){
+                        new Handler(context.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                SystemUtil.showToast(MainActivity.this, "拨号测试失败");
+                                Looper.loop();
+                            }
+                        });
+
+                    }
+                }
+            };
+
+            try{
+                thread1.start();
+                thread1.join();
+                thread2.start();
+
+
+            }catch (Exception e){
+
+            }
+
+
+
+
+
+
         }
 
 
@@ -548,6 +573,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 start_test.setEnabled(true);
+                mListView.setVisibility(View.VISIBLE);
             } else {
                 SystemUtil.showToast(MainActivity.this, "扫码失败");
 

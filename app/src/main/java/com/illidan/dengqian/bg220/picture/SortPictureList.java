@@ -16,6 +16,7 @@ public class SortPictureList implements Comparator {
         File file2 = new File(path2);
         if (file1.lastModified() < file2.lastModified()) {
             return 1;
-        } else return -1;
+        } else {
+            return -1;}
     }
 }

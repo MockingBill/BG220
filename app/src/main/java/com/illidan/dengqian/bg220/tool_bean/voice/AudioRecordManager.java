@@ -2,6 +2,7 @@ package com.illidan.dengqian.bg220.tool_bean.voice;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
+import android.media.MediaRecorder;
 
 import com.illidan.dengqian.bg220.MainActivity;
 
@@ -22,16 +23,22 @@ public class AudioRecordManager {
     private int sampleRatelnHz=44100;
     private int mChannel=AudioFormat.CHANNEL_IN_STEREO;
     private int mEncoding=AudioFormat.ENCODING_PCM_16BIT;
-    public static int record_int=1;
+
     public static final String []record_type_remark={
-            "DEFAULT 默认","MIC 麦克","VOICE_UPLINK 上行","VOICE_DOWNLINK 下行","VOICE_CALL 上下行","CAMCORDER 相机","VOICE_RECOGNITION 语音识别调整音","VOICE_COMMUNICATION对Voip 调整","REMOTE_SUBMIX 远端混合","UNPROCESSED 原始麦克"
+            "DEFAULT 默认","MIC_","VOICE_UPLINK 上行","VOICE_DOWNLINK 下行","VOICE_CALL 上下行","CAMCORDER 相机","VOICE_RECOGNITION 语音识别调整音","VOICE_COMMUNICATION对Voip 调整","REMOTE_SUBMIX 远端混合","UNPROCESSED 原始麦克"
     };
 
 
     public AudioRecordManager() {
             bufferSize = AudioRecord.getMinBufferSize(sampleRatelnHz, mChannel, mEncoding);
             bufferSize=bufferSize*4;
-            mRecorder = new AudioRecord(record_int, sampleRatelnHz, mChannel, mEncoding, bufferSize);
+            mRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRatelnHz, mChannel, mEncoding, bufferSize);
+    }
+
+
+
+    public static void destructionInstance(){
+        mInstance=null;
     }
 
 
@@ -156,7 +163,7 @@ public class AudioRecordManager {
      */
     public void startRecord(String dict_path,String file_name) {
 
-        file_name=record_type_remark[record_int]+"_"+file_name;
+        file_name=record_type_remark[1]+"_"+file_name;
         String path=dict_path+file_name;
         FileUnit.makeRootDirectory(dict_path);
         try {

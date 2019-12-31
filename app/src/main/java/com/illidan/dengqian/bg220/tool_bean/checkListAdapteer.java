@@ -1,5 +1,6 @@
 package com.illidan.dengqian.bg220.tool_bean;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -81,9 +82,15 @@ public class checkListAdapteer extends BaseAdapter {
         check_value.setText(checkBean.check_title.get(position).get(checkBean.value_tag));
 
 
+
+
+
         if("网络类型".equals(l)){
-            current_value.setText(MainActivity.net_tool.information.getNetwork_type());
-        }else if("GPS".equals(l)){
+            current_value.setText(MainActivity.net_tool.information.getStrNetWork_type());
+        }else if("信号强度".equals(l)){
+            current_value.setText(String.valueOf(MainActivity.net_tool.information.getBSSS()));
+        }
+        else if("GPS".equals(l)){
             current_value.setText(MainActivity.net_tool.information.getGPS());
         }else if("ECI".equals(l)){
             current_value.setText(MainActivity.net_tool.information.getECI());

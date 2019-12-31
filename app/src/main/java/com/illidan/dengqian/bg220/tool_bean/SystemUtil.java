@@ -162,7 +162,7 @@ public class SystemUtil {
     }
 
 
-    public static boolean SendGetRequest(String Strurl) throws Exception{
+    public static synchronized boolean SendGetRequest(String Strurl) throws Exception{
         StringBuffer sb=new StringBuffer();
         HttpURLConnection conn=null;
         URL url = new URL(Strurl);

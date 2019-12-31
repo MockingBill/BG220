@@ -24,6 +24,9 @@ public class checkBean {
     private  String end_datetime;
     private  String to_number;
     private  String url;
+
+
+    private int bsss_ok=-1;
     private int network_type_ok=-1;
     private int ECI_ok=-1;
     private int TAC_ok=-1;
@@ -52,22 +55,21 @@ public class checkBean {
 
         try{
             JSONObject jsonObject = new JSONObject(json);
-            if(jsonObject.has("test_anme")){
-                this.test_name=jsonObject.get("test_name").toString();
+            if(jsonObject.has("bsss")){
+                this.test_name=jsonObject.get("bsss").toString();
                 Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"测试名称");
+                map.put(lable_tag,"信号强度");
                 map.put(value_tag,this.test_name);
                 check_title.add(map);
             }else{
                 this.test_name="";
             }
-            if(jsonObject.has("network_type")&&jsonObject.get("network_type").toString().equals("0")){
+            if(jsonObject.has("network_type")&&!jsonObject.get("network_type").toString().equals("0")){
                 this.network_type=jsonObject.get("network_type").toString();
                 Map<String,String> map=new HashMap<String, String>();
                 map.put(lable_tag,"网络类型");
                 map.put(value_tag,this.network_type);
                 check_title.add(map);
-
             }else{
                 this.network_type="";
             }
@@ -93,7 +95,6 @@ public class checkBean {
                 map.put(value_tag,this.ECI);
                 check_title.add(map);
             }else{
-
                 this.ECI="";
             }
 
@@ -107,8 +108,6 @@ public class checkBean {
             }else{
                 TAC="";
             }
-
-
             if(jsonObject.has("start_datetime")&&jsonObject.has("end_datetime")){
                 this.start_datetime=jsonObject.get("start_datetime").toString();
                 this.end_datetime=jsonObject.get("end_datetime").toString();
@@ -164,7 +163,7 @@ public class checkBean {
         }
     }
     public boolean isOK(String a){
-        if ("".equals(a)||a==null||a.equals("null")){
+        if ("".equals(a)||a==null||a.equals("null")||a.equals("None")){
             return false;
         }else{
             return true;
@@ -181,14 +180,27 @@ public class checkBean {
 
     public void check(information current){
         StringBuffer sb=new StringBuffer();
+        /**
+         * 信号强度
+         */
+
+        if(isOK(this.test_name)){
+            int bsss=current.getBSSS();
+            int bsss_check=Integer.valueOf(this.test_name);
+            if(bsss_check<bsss){
+                    setBsss_ok(1);
+            }else{
+                setBsss_ok(0);
+            }
+            checkItem.add("信号强度核查");
+            checknum++;
+
+        }
 
 
         /**
          * 网络类型核查
          */
-
-
-
         if(isOK(this.network_type) && !this.network_type.equals("0")){
 
             String network=current.getStrNetWork_type();
@@ -358,6 +370,15 @@ public class checkBean {
         }
 
         this.url = url;
+    }
+
+
+    public int getBsss_ok() {
+        return bsss_ok;
+    }
+
+    public void setBsss_ok(int bsss_ok) {
+        this.bsss_ok = bsss_ok;
     }
 
     public String getTest_name() {

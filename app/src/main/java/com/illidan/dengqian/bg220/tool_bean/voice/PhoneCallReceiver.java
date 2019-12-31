@@ -76,16 +76,14 @@ public class PhoneCallReceiver extends BroadcastReceiver {
 
     protected void onOutgoingCallStarted(Context context,String number){
         SystemUtil.showToast(context, "去电开始");
-
-
-
         if (!AudioRecordManager.isStart){
             dict_path=Environment.getExternalStorageDirectory().getAbsolutePath()+"/BG2019/";
+            AudioRecordManager.destructionInstance();
             AudioRecordManager.getInstance().startRecord(dict_path,System.currentTimeMillis()+".pcm");
             isRing=true;
             }
         else{
-
+                SystemUtil.showToast(MainActivity.context,"录音线程已经开启,请勿重复开启。");
         }
         }
     protected void onOutgoingCallEnded(Context context,String number){
