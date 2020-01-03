@@ -8,6 +8,7 @@ import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 import com.illidan.dengqian.bg220.MainActivity;
+import com.illidan.dengqian.bg220.testActivity;
 import com.illidan.dengqian.bg220.tool_bean.SystemUtil;
 import com.illidan.dengqian.bg220.tool_bean.voice.AudioRecordManager;
 
@@ -90,6 +91,8 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         SystemUtil.showToast(context, "去电结束");
         if(AudioRecordManager.isStart){
             AudioRecordManager.getInstance().stopRecord();
+            Intent intent=new Intent(MainActivity.context,testActivity.class);
+            MainActivity.context.startActivity(intent);
         }
 
 

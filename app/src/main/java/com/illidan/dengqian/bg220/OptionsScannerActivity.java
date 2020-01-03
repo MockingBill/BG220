@@ -125,11 +125,9 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
         }else{
             intent.putExtra("ResultQRCode","0");
         }
-
         mScannerView.toggleLight(false);
         setResult(MainActivity.RESULT_CODE_SCAN,intent);
         finish();
-
     }
 
     private void vibrate() {

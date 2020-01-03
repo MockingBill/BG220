@@ -503,35 +503,39 @@ public class MainActivity extends AppCompatActivity {
                                 MainActivity.listadpt.notifyDataSetChanged();
                             }
 
+                            try {
+                                Class<TelephonyManager> c = TelephonyManager.class;
+                                Method mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
+                                mthEndCall.setAccessible(true);
+                                CallPhone();
+                            } catch (Exception e) {
+                                new Handler(context.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        SystemUtil.showToast(MainActivity.this, "拨号测试失败");
+                                        Looper.loop();
+                                    }
+                                });
 
+                            }
                             Looper.loop();
+
                         }
                     });
-                    /**
-                     * 拨号测试
-                     */
-                    try{
-                        Class<TelephonyManager> c = TelephonyManager.class;
-                        Method mthEndCall = c.getDeclaredMethod("getITelephony", (Class[]) null);
-                        mthEndCall.setAccessible(true);
-                        CallPhone();
-                    }catch (Exception e){
-                        new Handler(context.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                SystemUtil.showToast(MainActivity.this, "拨号测试失败");
-                                Looper.loop();
-                            }
-                        });
 
-                    }
                 }
             };
+
+
 
             try{
                 thread1.start();
                 thread1.join();
                 thread2.start();
+                thread2.join();
+
+
+
 
 
             }catch (Exception e){
@@ -549,9 +553,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static checkBean checkbean = null;
+    public static final int SPEED_TEST_RETURN=201;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+
+        Log.e("其他activity返回","回来了requestCode:"+String.valueOf(requestCode)+"resultCode:"+String.valueOf(resultCode));
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_CODE_SCAN) {
             String checkJsonStr = data.getExtras().getString("ResultQRCode");
@@ -579,6 +587,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
+
+        else if(resultCode==SPEED_TEST_RETURN){
+            Log.e("",data.getExtras().getString("speed_download"));
+            Log.e("",data.getExtras().getString("speed_upload"));
+        }
     }
 
     private void CallPhone() {
@@ -592,6 +605,8 @@ public class MainActivity extends AppCompatActivity {
             intent.setAction(Intent.ACTION_CALL); // 设置动作
             Uri data = Uri.parse("tel:" + number); // 设置数据
             intent.setData(data);
+
+
             startActivity(intent); // 激活Activity组件
         }
     }
