@@ -3,15 +3,19 @@ package com.illidan.dengqian.bg220;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import android.location.LocationManager;
 
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,7 +24,10 @@ import android.os.Message;
 import android.provider.CallLog;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.PhoneStateListener;
@@ -28,6 +35,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.Button;
@@ -40,6 +49,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.illidan.dengqian.bg220.http_conn.AesAndToken;
+import com.illidan.dengqian.bg220.http_conn.connNetReq;
+import com.illidan.dengqian.bg220.http_conn.versionInfo;
 import com.illidan.dengqian.bg220.tool_bean.Myhander;
 import com.illidan.dengqian.bg220.tool_bean.checkBean;
 import com.illidan.dengqian.bg220.tool_bean.checkListAdapteer;
@@ -56,7 +68,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +89,24 @@ public class MainActivity extends AppCompatActivity {
      * 常量与静态基本量声明区
      */
     private static final String TAG = "MainActivity";
+    public static MainActivity instance=null;
+    public static final int SPEED_TEST_RETURN=201;
+    public static final int SPEEED_TEST_REEQUEST=333;
+
+    public static checkBean checkbean = null;
+    // 外存sdcard存放路径
+    private static final String FILE_PATH = Environment.getExternalStorageDirectory() + "/" + "AutoUpdate" + "/";
+    // 下载应用存放全路径
+    private static final String FILE_NAME = FILE_PATH + "bg2020.apk";
+    // 准备安装新版本应用标记
+    private static final int INSTALL_TOKEN = 1;
+    //安装应用
+    private String apk_path = "";
+
+
+    //用户信息
+    String username="";
+    String phonenumber="";
 
 
 
@@ -81,6 +117,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean isSIM = false;
     //测试进行中标记
     public boolean isInTest = false;
+    //速度测试中转变量
+    public String currentDownSpeed="无";
+    public String currentUpSpeed="无";
+
+    //测试失败的URL
+    public String testErrUrl="";
 
 
 
@@ -103,8 +145,11 @@ public class MainActivity extends AppCompatActivity {
     private ListView mListView;
     private ListView checkListView;
     //消息传递
-    public static Myhander myhander;
-    public static Message msg;
+    public static Myhander myhander=new Myhander();
+    public static Message msg=new Message();
+    //测试报告弹窗
+    private View contentView;
+    private PopupWindow popupWindow;
 
 
 
@@ -203,14 +248,36 @@ public class MainActivity extends AppCompatActivity {
 
         //check_title_lable.setVisibility(View.GONE);
         checkListView.setVisibility(View.GONE);
-
+        instance=this;
+        apk_path=getString(R.string.apkurl);
         initPermission();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.persionInfo:{
+                showPopWindowns_per();
+
+            }
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+
         if (isSIM) {
             try {
                 telMag.listen(listenerSign, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
@@ -254,11 +321,10 @@ public class MainActivity extends AppCompatActivity {
      */
 
     public void init() {
-        myhander = new Myhander();
+        sp=context.getSharedPreferences("person_config",MODE_PRIVATE);
         msg = new Message();
         telMag = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         net_tool = new NetWork_Tool(telMag);
-
         listenerSign = new myPhoneStateListener();
         listenerNetwork = new myPhoneStateListener();
         mylocationListener = new mylocationListener();
@@ -353,6 +419,10 @@ public class MainActivity extends AppCompatActivity {
                 showPopWindowns();
             }
         });
+
+
+
+
         net_tool.start();
 
     }
@@ -399,6 +469,7 @@ public class MainActivity extends AppCompatActivity {
                                             @Override
                                             public void run() {
                                                 network_test = false;
+                                                testErrUrl=url;
                                                 Looper.loop();
                                             }
                                         });
@@ -552,8 +623,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static checkBean checkbean = null;
-    public static final int SPEED_TEST_RETURN=201;
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -566,6 +636,7 @@ public class MainActivity extends AppCompatActivity {
             if (checkJsonStr != null && !checkJsonStr.equals("0")) {
 
                 checkbean = new checkBean(checkJsonStr);
+
                 //UI动态设置
                 startOrStop_test.setText("停止测试");
                 //check_title_lable.setVisibility(View.VISIBLE);
@@ -588,11 +659,28 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        else if(resultCode==SPEED_TEST_RETURN){
-            Log.e("",data.getExtras().getString("speed_download"));
-            Log.e("",data.getExtras().getString("speed_upload"));
+        else if(resultCode==SPEED_TEST_RETURN && requestCode==SPEEED_TEST_REEQUEST){
+            currentDownSpeed=data.getExtras().getString("speed_download");
+            currentUpSpeed=data.getExtras().getString("speed_upload");
+
+
+            if("0 Mbps".equals(currentDownSpeed)&& "0 Mbps".equals(currentUpSpeed)){
+                information.TitleAddItem("速度测试");
+                information.isrightAddItem(0);
+                listadpt.notifyDataSetChanged();
+                currentUpSpeed="未测试";
+                currentDownSpeed="未测试";
+            }else{
+                information.TitleAddItem("速度测试");
+                information.isrightAddItem(1);
+                listadpt.notifyDataSetChanged();
+            }
+
+
         }
     }
+
+
 
     private void CallPhone() {
         // 拨号：激活系统的拨号组件
@@ -611,8 +699,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private View contentView;
-    private PopupWindow popupWindow;
+
 
     public void showPopWindowns() {
         contentView = LayoutInflater.from(this).inflate(R.layout.window_layout, null);
@@ -630,6 +717,12 @@ public class MainActivity extends AppCompatActivity {
         TextView ValueCollTime = (TextView) contentView.findViewById(R.id.ValueCollTime);
 
         Button singleUpload = (Button) contentView.findViewById(R.id.singleUpload);
+
+        TextView upspeed=(TextView)contentView.findViewById(R.id.uploadID);
+        TextView downspeed=(TextView)contentView.findViewById(R.id.downloadID);
+
+        upspeed.setText(currentUpSpeed);
+        downspeed.setText(currentDownSpeed);
 
 
         if (checkBean.checkItem.contains("网络类型核查")) {
@@ -728,14 +821,154 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                String u=sp.getString("username","");
+                String p=sp.getString("phonenumber","");
+
+
+                if("".equals(u)||"".equals(p)){
+                    SystemUtil.showToast(context,"请点击右上角三个点填写个人信息。");
+                }else{
+                    username=u;
+                    phonenumber=p;
+                    //录音
+
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            try{
+                                StringBuffer sb=new StringBuffer();
+                                sb.append("{");
+                                sb.append("\"username\":\""+username+"\",");
+                                sb.append("\"phonenumber\":\""+phonenumber+"\",");
+                                sb.append("\"test_id\":\""+checkbean.getTest_id()+"\",");
+                                sb.append("\"network_operator_name\":\""+net_tool.information.getNetworkOperatorName()+"\",");
+                                sb.append("\"address\":\""+net_tool.information.getAddress()+"\",");
+                                sb.append("\"eci\":\""+net_tool.information.getECI()+"\",");
+                                sb.append("\"tac\":\""+net_tool.information.getTAC()+"\",");
+                                sb.append("\"bsss\":\""+net_tool.information.getBSSS()+"\",");
+                                sb.append("\"gps\":\""+net_tool.information.getGPS()+"\",");
+                                sb.append("\"network_type\":\""+net_tool.information.getNetwork_type()+"\",");
+                                sb.append("\"phone_type\":\""+net_tool.information.getPhoneType()+"\",");
+                                sb.append("\"coll_time\":\""+net_tool.information.getCollTime2()+"\",");
+                                sb.append("\"download_speed\":\""+currentDownSpeed+"\",");
+                                sb.append("\"to_number\":\""+checkbean.getTo_number()+"\",");
+
+
+                                if(checkBean.checkItem.size()==0){
+                                    sb.append("\"upload_speed\":\""+currentUpSpeed+"\"");
+                                }else{
+                                    sb.append("\"upload_speed\":\""+currentUpSpeed+"\",");
+                                }
+
+                                if(checkBean.checkItem.contains("信号强度核查")){
+
+                                    sb.append("\"bsss_check\":\""+checkbean.getBsss_ok()+"\",");
+                                    sb.append("\"verify_bsss_value\":\""+checkbean.getTest_name()+"\",");
+                                }else{
+                                    sb.append("\"bsss_check\":\""+String.valueOf(-1)+"\",");
+                                }
+
+                                if(checkBean.checkItem.contains("网络类型核查")){
+                                    sb.append("\"network_type_check\":\""+checkbean.getNetwork_type_ok()+"\",");
+                                    sb.append("\"verify_network_type_value\":\""+checkbean.getNetwork_type()+"\",");
+                                }else{
+                                    sb.append("\"network_type_check\":\""+String.valueOf(-1)+"\",");
+                                }
+
+                                if(checkBean.checkItem.contains("Gps位置核查")){
+                                    sb.append("\"gps_check\":\""+checkbean.getGps_ok()+"\",");
+                                    sb.append("\"verify_gps_value\":\""+checkbean.getGps_lon()+","+checkbean.getGps_lat()+"\",");
+                                }else{
+                                    sb.append("\"gps_check\":\""+String.valueOf(-1)+"\",");
+                                }
+
+                                if(checkBean.checkItem.contains("ECI核查")){
+                                    sb.append("\"ECI_check\":\""+checkbean.getECI_ok()+"\",");
+                                    sb.append("\"verify_ECI_value\":\""+checkbean.getECI()+"\",");
+                                }else{
+                                    sb.append("\"ECI_check\":\""+String.valueOf(-1)+"\",");
+                                }
+
+                                if(checkBean.checkItem.contains("TAC核查")){
+                                    sb.append("\"TAC_check\":\""+checkbean.getTAC_ok()+"\",");
+                                    sb.append("\"verify_TAC_value\":\""+checkbean.getTAC()+"\",");
+                                }else{
+                                    sb.append("\"TAC_check\":\""+String.valueOf(-1)+"\",");
+                                }
+                                if(checkBean.checkItem.contains("时间范围核查")){
+                                    sb.append("\"datetime_check\":\""+checkbean.getDatetime_ok()+"\",");
+                                    sb.append("\"verify_datetime_value\":\""+checkbean.getStart_datetime()+"_"+checkbean.getEnd_datetime()+"\",");
+                                }else{
+                                    sb.append("\"datetime_check\":\""+String.valueOf(-1)+"\",");
+                                }
+                                if(network_test){
+                                    sb.append("\"verify_url_value\":\""+checkbean.getUrl()+"\",");
+                                    sb.append("\"url_check\":\""+String.valueOf(1)+"\"");
+                                }else{
+                                    sb.append("\"url_check\":\""+String.valueOf(0)+"\"");
+                                }
+
+                                sb.append("}");
+                                Log.e("",sb.toString());
+                                connNetReq.post(getString(R.string.upload_url),sb.toString());
+
+                            }catch(Exception e){
+                                Log.e("upload",e.toString());
+                            }
+                        }
+                    }.start();
+                }
+
+
+
             }
         });
-
-
         View rootview = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
         popupWindow.showAtLocation(rootview, Gravity.TOP, 0, 30);
 
 
+    }
+
+    public Button submit_inf=null;
+    //测试报告弹窗
+    private View personView;
+    private PopupWindow personpopupWindow;
+    SharedPreferences sp;
+
+    public void showPopWindowns_per() {
+        personView = LayoutInflater.from(this).inflate(R.layout.window_personal_inf, null);
+        personpopupWindow = new PopupWindow(personView, FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT, true);
+
+        submit_inf=(Button)personView.findViewById(R.id.submit_inf);
+
+
+        ((EditText)personView.findViewById(R.id.phonenumber)).setText(sp.getString("phonenumber",""));
+        ((EditText)personView.findViewById(R.id.username)).setText(sp.getString("username",""));
+
+        submit_inf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String u=((EditText)personView.findViewById(R.id.username)).getText().toString();
+                String p=((EditText)personView.findViewById(R.id.phonenumber)).getText().toString();
+
+                if("".equals(u)&&"".equals(p)){
+                    Toast.makeText(context,"请输入有效值",Toast.LENGTH_SHORT).show();
+                }else{
+                    SharedPreferences.Editor edit=sp.edit();
+                    edit.putString("username",u);
+                    edit.putString("phonenumber",p);
+                    if(edit.commit()){
+                        Toast.makeText(context,"保存成功",Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(context,"保存失败",Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+            }
+        });
+        View rootview = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
+        personpopupWindow.showAtLocation(rootview, Gravity.TOP, 30, 30);
     }
 
     /**
@@ -789,6 +1022,211 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+    }
+
+    private void getCheckVersion(){
+        new Thread() {
+            String warmText="版本已是最新";
+            versionInfo version=new versionInfo();
+            boolean isRequire=false;
+            public void run() {
+                String res = "";
+                try {
+                    String phoneNumber = "13508522561";
+                    res = connNetReq.post(getString(R.string.getCheckVersion), "{\"phoneNumber\":\"" + phoneNumber + "\"}");
+                    res= AesAndToken.decrypt(res,AesAndToken.KEY);
+                    version=connNetReq.jsonToVersionInfo(res);
+                    if(version.getAppName().equals("")){
+                        warmText="版本更新检查错误";
+                    }else{
+                        double currentVersion=Double.valueOf(getString(R.string.currentVersion));
+                        double serverVersion=Double.valueOf(version.getServerVersion());
+                        if(serverVersion>currentVersion){
+                            isRequire=true;
+                        }else{
+                            isRequire=false;
+                        }
+                    }
+                }catch(Exception e){
+                    Log.e("errMain:版本更新检查",e.toString());
+                }
+
+                try{
+                    new Handler(MainActivity.this.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(isRequire){
+                                //    通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
+                                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                //    设置Title的图标
+                                //builder.setIcon(R.drawable.ic_launcher);
+                                //    设置Title的内容
+                                builder.setTitle("版本更新检查");
+                                //    设置Content来显示一个信息
+                                builder.setMessage(version.getUpgradeinfo());
+                                //    设置一个PositiveButton
+                                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        apk_path=version.getUpdateUrl();
+                                        showDownloadDialog();
+                                        //Toast.makeText(MainActivity.this, "positive: " + which, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                //    设置一个NegativeButton
+                                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                });
+
+                                //    显示出该对话框
+                                builder.show();
+                            }else{
+                                Toast.makeText(MainActivity.this, warmText, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }catch(Exception e){
+                    Log.e("errHander",e.toString());
+                }
+            }
+        }.start();
+    }
+    ProgressDialog progressDialog=null;
+    public void showDownloadDialog() {
+
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setTitle("正在下载...");
+        progressDialog.setCanceledOnTouchOutside(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+
+        new downloadAsyncTask().execute();
+    }
+
+    /**
+     * 下载新版本应用
+     */
+    private class downloadAsyncTask extends AsyncTask<Void, Integer, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            Log.e(TAG, "执行至--onPreExecute");
+            progressDialog.show();
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+
+            Log.e(TAG, "执行至--doInBackground");
+
+            URL url;
+            HttpURLConnection connection = null;
+            InputStream in = null;
+            FileOutputStream out = null;
+            try {
+                url = new URL(apk_path);
+                connection = (HttpURLConnection) url.openConnection();
+
+                in = connection.getInputStream();
+                long fileLength = connection.getContentLength();
+                File file_path = new File(FILE_PATH);
+                if (!file_path.exists()) {
+                    file_path.mkdir();
+                }
+
+                out = new FileOutputStream(new File(FILE_NAME));//为指定的文件路径创建文件输出流
+                byte[] buffer = new byte[1024 * 1024];
+                int len = 0;
+                long readLength = 0;
+
+                while ((len = in.read(buffer)) != -1) {
+
+                    out.write(buffer, 0, len);//从buffer的第0位开始读取len长度的字节到输出流
+                    readLength += len;
+
+                    int curProgress = (int) (((float) readLength / fileLength) * 100);
+
+                    publishProgress(curProgress);
+
+                    if (readLength >= fileLength) {
+
+                        break;
+                    }
+                }
+
+                out.flush();
+                return INSTALL_TOKEN;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            progressDialog.setProgress(values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+
+            progressDialog.dismiss();//关闭进度条
+            //安装应用
+            installApp();
+        }
+    }
+    /**
+     * 安装新版本应用
+     */
+    private void installApp() {
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            return;
+        }
+
+
+
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        // 由于没有在Activity环境下启动Activity,设置下面的标签
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //if(Build.VERSION.SDK_INT>=24)
+
+        if(Build.VERSION.SDK_INT>=24){ //判读版本是否在7.0以上
+            //参数1 上下文, 参数2 Provider主机地址 和配置文件中保持一致   参数3  共享的文件
+            Uri apkUri = FileProvider.getUriForFile(context, "com.example.dengqian.netcolltool.fileprovider", file);
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        }else{
+            intent.setDataAndType(Uri.fromFile(file),
+                    "application/vnd.android.package-archive");
+        }
+        context.startActivity(intent);
+
     }
 
 

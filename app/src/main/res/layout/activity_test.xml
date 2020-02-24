@@ -164,12 +164,15 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
                     <Button
+                        android:layout_marginRight="3dp"
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginBottom="3dp"
                         android:id="@+id/returnMain"
                         android:layout_weight="1"
                         style="@style/Widget.AppCompat.Button.Colored"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/textColor2"
+                        android:background="@drawable/test_button_style"
                         android:elevation="0dp"
                         android:shadowRadius="15"
                         android:text="返回主界面"
@@ -178,12 +181,15 @@
                         android:textSize="16sp" />
 
                     <Button
+                        android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"
+                        android:layout_marginBottom="3dp"
                         android:id="@+id/startButton"
                         android:layout_weight="1"
                         style="@style/Widget.AppCompat.Button.Colored"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/textColor2"
+                        android:background="@drawable/test_button_style"
                         android:elevation="0dp"
                         android:shadowRadius="15"
                         android:text="开始测试"

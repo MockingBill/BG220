@@ -12,6 +12,8 @@ import com.illidan.dengqian.bg220.testActivity;
 import com.illidan.dengqian.bg220.tool_bean.SystemUtil;
 import com.illidan.dengqian.bg220.tool_bean.voice.AudioRecordManager;
 
+import java.util.MissingFormatArgumentException;
+
 /**
  * Created by hgx on 2016/6/13.
  */
@@ -92,7 +94,7 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         if(AudioRecordManager.isStart){
             AudioRecordManager.getInstance().stopRecord();
             Intent intent=new Intent(MainActivity.context,testActivity.class);
-            MainActivity.context.startActivity(intent);
+            MainActivity.instance.startActivityForResult(intent,MainActivity.SPEEED_TEST_REEQUEST);
         }
 
 

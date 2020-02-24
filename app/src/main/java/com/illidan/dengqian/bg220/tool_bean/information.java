@@ -321,6 +321,25 @@ public class information {
     public  static int[] isright = {};
 
 
+    public static void TitleAddItem(String item){
+        String []mid=new String[information.title.length+1];
+        for(int i=0;i<mid.length-1;i++){
+            mid[i]=information.title[i];
+        }
+        mid[mid.length-1]=item;
+        information.title=mid;
+    }
+
+    public static void isrightAddItem(int item){
+        int []mid=new int[information.isright.length+1];
+        for(int i=0;i<mid.length-1;i++){
+            mid[i]=information.isright[i];
+        }
+        mid[mid.length-1]=item;
+        information.isright=mid;
+    }
+
+
 
 
 }

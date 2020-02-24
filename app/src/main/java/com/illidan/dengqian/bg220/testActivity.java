@@ -39,6 +39,9 @@ import javax.security.auth.login.LoginException;
 public class testActivity extends AppCompatActivity {
     static int position = 0;
     static int lastPosition = 0;
+    public TextView downloadTextView=null;
+    public TextView uploadTextView=null;
+
     GetSpeedTestHostsHandler getSpeedTestHostsHandler = null;
     HashSet<String> tempBlackList;
 
@@ -50,22 +53,23 @@ public class testActivity extends AppCompatActivity {
         getSpeedTestHostsHandler.start();
     }
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-
-
+        downloadTextView = (TextView) findViewById(R.id.downloadTextView);
+        uploadTextView = (TextView) findViewById(R.id.uploadTextView);
         final Button startButton = (Button) findViewById(R.id.startButton);
         final Button returnButton =(Button)findViewById(R.id.returnMain);
-        returnButton.setEnabled(false);
+        //returnButton.setEnabled(false);
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("www","wwww");
                 Intent intent=new Intent();
-                intent.putExtra("speed_download","32MB/s");
-                intent.putExtra("speed_upload","5MB/s");
+                intent.putExtra("speed_download",downloadTextView.getText().toString());
+                intent.putExtra("speed_upload",uploadTextView.getText().toString());
                 setResult(MainActivity.SPEED_TEST_RETURN,intent);
                 finish();
 
@@ -91,15 +95,17 @@ public class testActivity extends AppCompatActivity {
                     RotateAnimation rotate;
                     ImageView barImageView = (ImageView) findViewById(R.id.barImageView);
                     TextView pingTextView = (TextView) findViewById(R.id.pingTextView);
-                    TextView downloadTextView = (TextView) findViewById(R.id.downloadTextView);
-                    TextView uploadTextView = (TextView) findViewById(R.id.uploadTextView);
+
+
+
+
 
                     @Override
                     public void run() {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                startButton.setText("基于ping选择最佳测试服务器...");
+                                startButton.setText("正在基于ping值选择最佳测试服务器，请稍等...");
                             }
                         });
 
@@ -175,6 +181,7 @@ public class testActivity extends AppCompatActivity {
                             public void run() {
                                 startButton.setTextSize(13);
                                 startButton.setText(String.format("主机位置: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
+                               // returnButton.setEnabled(true);
                             }
                         });
 
@@ -346,6 +353,7 @@ public class testActivity extends AppCompatActivity {
                                             @Override
                                             public void run() {
                                                 downloadTextView.setText(dec.format(downloadTest.getFinalDownloadRate()) + " Mbps");
+
                                             }
                                         });
                                     }
@@ -364,6 +372,7 @@ public class testActivity extends AppCompatActivity {
                                             rotate.setDuration(100);
                                             barImageView.startAnimation(rotate);
                                             downloadTextView.setText(dec.format(downloadTest.getInstantDownloadRate()) + " Mbps");
+
 
                                         }
 

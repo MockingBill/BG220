@@ -28,7 +28,7 @@
         android:paddingRight="5dp"
         android:layout_gravity="bottom"
         android:background="@drawable/znnwincontent"
-        android:textSize="18dp"
+        android:textSize="13dp"
         android:text="运营商："/>
     <TextView
         android:id="@+id/NetworkOperatorName"
@@ -37,7 +37,7 @@
         android:background="@drawable/znnwincontent"
         android:gravity="center_horizontal"
         android:text="中国移动"
-        android:textSize="18dp"
+        android:textSize="13dp"
         />
     </LinearLayout>
 
@@ -57,7 +57,7 @@
             android:paddingRight="5dp"
             android:layout_gravity="bottom"
             android:background="@drawable/znnwincontent"
-            android:textSize="18dp"
+            android:textSize="13dp"
             android:text="详细地址："/>
         <TextView
             android:id="@+id/address"
@@ -66,7 +66,7 @@
             android:background="@drawable/znnwincontent"
             android:gravity="center_horizontal"
             android:text="贵阳"
-            android:textSize="18dp"
+            android:textSize="13dp"
             />
     </LinearLayout>
 
@@ -86,7 +86,7 @@
             android:gravity="right"
             android:paddingRight="5dp"
             android:layout_gravity="bottom"
-            android:textSize="18dp"
+            android:textSize="13dp"
             android:background="@drawable/znnwincontent"
             android:text="ECI："/>
         <TextView
@@ -96,7 +96,7 @@
             android:text="112332"
             android:gravity="center_horizontal"
             android:background="@drawable/znnwincontent"
-            android:textSize="18dp"
+            android:textSize="13dp"
             />
     </LinearLayout>
     <LinearLayout
@@ -116,7 +116,7 @@
             android:gravity="right"
             android:paddingRight="5dp"
             android:background="@drawable/znnwincontent"
-            android:textSize="18dp"
+            android:textSize="13dp"
             android:text="TAC："/>
         <TextView
             android:id="@+id/ValueTAC"
@@ -125,7 +125,7 @@
             android:text="121212"
             android:gravity="center_horizontal"
             android:background="@drawable/znnwincontent"
-            android:textSize="18dp"
+            android:textSize="13dp"
             />
     </LinearLayout>
     <LinearLayout
@@ -144,7 +144,7 @@
             android:layout_height="match_parent"
             android:gravity="right"
             android:paddingRight="5dp"
-            android:textSize="18dp"
+            android:textSize="13dp"
             android:background="@drawable/znnwincontent"
             android:text="BSSS："/>
         <TextView
@@ -154,7 +154,7 @@
             android:text="-89dbm"
             android:gravity="center_horizontal"
             android:background="@drawable/znnwincontent"
-            android:textSize="18dp"
+            android:textSize="13dp"
             />
     </LinearLayout>
     <LinearLayout
@@ -173,7 +173,7 @@
             android:layout_height="match_parent"
             android:gravity="right"
             android:paddingRight="5dp"
-            android:textSize="18dp"
+            android:textSize="13dp"
             android:background="@drawable/znnwincontent"
             android:text="GPS："/>
         <TextView
@@ -183,7 +183,7 @@
             android:text="(127.2434,1212324.2124)"
             android:gravity="center_horizontal"
             android:background="@drawable/znnwincontent"
-            android:textSize="18dp"
+            android:textSize="13dp"
             />
     </LinearLayout>
     <LinearLayout
@@ -202,7 +202,7 @@
             android:layout_height="match_parent"
             android:gravity="right"
             android:paddingRight="5dp"
-            android:textSize="18dp"
+            android:textSize="13dp"
             android:background="@drawable/znnwincontent"
             android:text="网络类型："/>
         <TextView
@@ -212,7 +212,7 @@
             android:text="4G"
             android:gravity="center_horizontal"
             android:background="@drawable/znnwincontent"
-            android:textSize="18dp"
+            android:textSize="13dp"
             />
     </LinearLayout>
     <LinearLayout
@@ -230,7 +230,7 @@
             android:layout_gravity="bottom"
             android:layout_height="match_parent"
             android:gravity="right"
-            android:textSize="18dp"
+            android:textSize="13dp"
             android:paddingRight="5dp"
             android:background="@drawable/znnwincontent"
             android:text="手机型号："/>
@@ -241,7 +241,7 @@
             android:text="魅族"
             android:gravity="center_horizontal"
             android:background="@drawable/znnwincontent"
-            android:textSize="18dp"
+            android:textSize="13dp"
             />
     </LinearLayout>
 
@@ -260,7 +260,7 @@
             android:layout_gravity="bottom"
             android:layout_height="match_parent"
             android:gravity="right"
-            android:textSize="18dp"
+            android:textSize="13dp"
             android:paddingRight="5dp"
             android:background="@drawable/znnwincontent"
             android:text="采集时间："/>
@@ -271,7 +271,67 @@
             android:background="@drawable/znnwincontent"
             android:text="2019-12-04 11:11:11"
             android:gravity="center_horizontal"
-            android:textSize="18dp"
+            android:textSize="13dp"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:baselineAligned="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_gravity="bottom"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:textSize="13dp"
+            android:paddingRight="5dp"
+            android:background="@drawable/znnwincontent"
+            android:text="下载速度："/>
+        <TextView
+            android:id="@+id/downloadID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/znnwincontent"
+            android:text="80.48 Mbps"
+            android:gravity="center_horizontal"
+            android:textSize="13dp"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:baselineAligned="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="100dp"
+            android:layout_gravity="bottom"
+            android:layout_height="match_parent"
+            android:gravity="right"
+            android:textSize="13dp"
+            android:paddingRight="5dp"
+            android:background="@drawable/znnwincontent"
+            android:text="上传速度："/>
+        <TextView
+            android:id="@+id/uploadID"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/znnwincontent"
+            android:text="26.92 Mbps"
+            android:gravity="center_horizontal"
+            android:textSize="13dp"
             />
     </LinearLayout>
 
@@ -286,7 +346,9 @@
         android:orientation="horizontal"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <Button
+            android:layout_margin="20dp"
             android:id="@+id/singleUpload"
+            android:background="@drawable/upload_button_style"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"

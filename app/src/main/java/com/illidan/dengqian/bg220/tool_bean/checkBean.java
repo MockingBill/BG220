@@ -24,6 +24,9 @@ public class checkBean {
     private  String end_datetime;
     private  String to_number;
     private  String url;
+    private String test_id;
+    //浪潮 emo_cm_manager
+    private String system_mark;
 
 
     private int bsss_ok=-1;
@@ -54,7 +57,14 @@ public class checkBean {
 
 
         try{
+
+
             JSONObject jsonObject = new JSONObject(json);
+            if(jsonObject.has("test_id")){
+                this.test_id=jsonObject.get("test_id").toString();
+            }else{
+                this.test_id="0";
+            }
             if(jsonObject.has("bsss")){
                 this.test_name=jsonObject.get("bsss").toString();
                 Map<String,String> map=new HashMap<String, String>();
@@ -281,6 +291,14 @@ public class checkBean {
     };
 
 
+    public String getTest_id() {
+        return test_id;
+    }
+
+    public void setTest_id(String test_id) {
+        this.test_id = test_id;
+    }
+
     public void setNetwork_type_ok(int network_type_ok) {
         this.network_type_ok = network_type_ok;
     }
@@ -419,5 +437,13 @@ public class checkBean {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getSystem_mark() {
+        return system_mark;
+    }
+
+    public void setSystem_mark(String system_mark) {
+        this.system_mark = system_mark;
     }
 }
