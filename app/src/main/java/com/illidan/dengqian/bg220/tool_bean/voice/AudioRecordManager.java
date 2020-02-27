@@ -163,7 +163,7 @@ public class AudioRecordManager {
      */
     public void startRecord(String dict_path,String file_name) {
 
-        file_name=record_type_remark[1]+"_"+file_name;
+
         String path=dict_path+file_name;
         FileUnit.makeRootDirectory(dict_path);
         try {
@@ -202,6 +202,8 @@ public class AudioRecordManager {
                 @Override
                 public void run() {
                     PcmToWavUtil p2w=new PcmToWavUtil(sampleRatelnHz,mChannel,mEncoding);
+                    MainActivity.currnt_pcm_file=pcm_path+".wav";
+
                     p2w.pcmToWav(pcm_path,pcm_path+".wav");
                 }
             });

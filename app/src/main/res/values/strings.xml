@@ -16,10 +16,11 @@
     </array>
 
     <string name="title_activity_main2">Main2Activity</string>
-    <string name="server_ip">http://192.168.1.103:5000/</string>
-    <string name="getCheckVersion">http://192.168.1.103:5000/getCheckVersion</string>
-    <string name="apkurl">http://192.168.1.103:5000/bg2020.apk</string>
-    <string name="upload_url">http://192.168.1.103:5000/test_server</string>
+    <string name="server_ip">http://192.168.1.105:5000/</string>
+    <string name="getCheckVersion">http://192.168.1.105:5000/getCheckVersion</string>
+    <string name="apkurl">http://192.168.1.105:5000/bg2020.apk</string>
+    <string name="upload_url">http://192.168.1.105:5000/test_server</string>
+    <string name="file_upload">http://192.168.1.105:5000/uploader</string>
     <string name="currentVersion">1.0</string>
 
 

@@ -13,193 +13,186 @@ import java.util.List;
 import java.util.Map;
 
 public class checkBean {
-    public static final String TAG="checkBean_err";
-    private  String test_name;
-    private  String network_type;
-    private  String gps_lon;
-    private  String gps_lat;
-    private  String ECI;
-    private  String TAC;
-    private  String start_datetime;
-    private  String end_datetime;
-    private  String to_number;
-    private  String url;
+    public static final String TAG = "checkBean_err";
+    private String test_name;
+    private String network_type;
+    private String gps_lon;
+    private String gps_lat;
+    private String ECI;
+    private String TAC;
+    private String start_datetime;
+    private String end_datetime;
+    private String to_number;
+    private String url;
     private String test_id;
     //浪潮 emo_cm_manager
     private String system_mark;
 
 
-    private int bsss_ok=-1;
-    private int network_type_ok=-1;
-    private int ECI_ok=-1;
-    private int TAC_ok=-1;
-    private int datetime_ok=-1;
-    private int gps_ok=-1;
+    private int bsss_ok = -1;
+    private int network_type_ok = -1;
+    private int ECI_ok = -1;
+    private int TAC_ok = -1;
+    private int datetime_ok = -1;
+    private int gps_ok = -1;
 
-    public static int checknum=0;
-    public static List<String> checkItem=new ArrayList<>();
-    public static List<Map<String,String>> check_title=new ArrayList<>();
+    public static int checknum = 0;
+    public static List<String> checkItem = new ArrayList<>();
+    public static List<Map<String, String>> check_title = new ArrayList<>();
 
-    public static final  String lable_tag="lable";
-    public static final  String value_tag="value";
+    public static final String lable_tag = "lable";
+    public static final String value_tag = "value";
 
 
-    public checkBean(){
+    public checkBean() {
 
     }
 
-    public checkBean(String json){
-        Map<String,String> map1=new HashMap<String, String>();
-        map1.put(lable_tag,"测试项");
-        map1.put(value_tag,"要求值");
+    public checkBean(String json) {
+        Map<String, String> map1 = new HashMap<String, String>();
+        map1.put(lable_tag, "测试项");
+        map1.put(value_tag, "要求值");
         check_title.add(map1);
-
-
-
-        try{
-
-
+        try {
             JSONObject jsonObject = new JSONObject(json);
-            if(jsonObject.has("test_id")){
-                this.test_id=jsonObject.get("test_id").toString();
-            }else{
-                this.test_id="0";
+            if (jsonObject.has("test_id")) {
+                this.test_id = jsonObject.get("test_id").toString();
+            } else {
+                this.test_id = "0";
             }
-            if(jsonObject.has("bsss")){
-                this.test_name=jsonObject.get("bsss").toString();
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"信号强度");
-                map.put(value_tag,this.test_name);
+            if (jsonObject.has("bsss")) {
+                this.test_name = jsonObject.get("bsss").toString();
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "信号强度");
+                map.put(value_tag, this.test_name);
                 check_title.add(map);
-            }else{
-                this.test_name="";
+            } else {
+                this.test_name = "";
             }
-            if(jsonObject.has("network_type")&&!jsonObject.get("network_type").toString().equals("0")){
-                this.network_type=jsonObject.get("network_type").toString();
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"网络类型");
-                map.put(value_tag,this.network_type);
+            if (jsonObject.has("network_type") && !jsonObject.get("network_type").toString().equals("0")) {
+                this.network_type = jsonObject.get("network_type").toString();
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "网络类型");
+                map.put(value_tag, this.network_type);
                 check_title.add(map);
-            }else{
-                this.network_type="";
+            } else {
+                this.network_type = "";
             }
-            if(jsonObject.has("gps_lon")&&jsonObject.has("gps_lat")){
-                this.gps_lon=jsonObject.get("gps_lon").toString();
-                this.gps_lat=jsonObject.get("gps_lat").toString();
+            if (jsonObject.has("gps_lon") && jsonObject.has("gps_lat")) {
+                this.gps_lon = jsonObject.get("gps_lon").toString();
+                this.gps_lat = jsonObject.get("gps_lat").toString();
 
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"GPS");
-                map.put(value_tag,this.gps_lon+","+this.gps_lat);
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "GPS");
+                map.put(value_tag, this.gps_lon + "," + this.gps_lat);
                 check_title.add(map);
 
-            }else{
-                gps_lon="";
-                gps_lat="";
+            } else {
+                gps_lon = "";
+                gps_lat = "";
             }
 
-            if(jsonObject.has("ECI")){
+            if (jsonObject.has("ECI")) {
 
-                this.ECI=jsonObject.get("ECI").toString();
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"ECI");
-                map.put(value_tag,this.ECI);
+                this.ECI = jsonObject.get("ECI").toString();
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "ECI");
+                map.put(value_tag, this.ECI);
                 check_title.add(map);
-            }else{
-                this.ECI="";
+            } else {
+                this.ECI = "";
             }
 
 
-            if(jsonObject.has("TAC")){
-                this.TAC=jsonObject.get("TAC").toString();
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"TAC");
-                map.put(value_tag,this.TAC);
+            if (jsonObject.has("TAC")) {
+                this.TAC = jsonObject.get("TAC").toString();
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "TAC");
+                map.put(value_tag, this.TAC);
                 check_title.add(map);
-            }else{
-                TAC="";
+            } else {
+                TAC = "";
             }
-            if(jsonObject.has("start_datetime")&&jsonObject.has("end_datetime")){
-                this.start_datetime=jsonObject.get("start_datetime").toString();
-                this.end_datetime=jsonObject.get("end_datetime").toString();
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"测试时间");
-                map.put(value_tag,this.start_datetime+"-"+this.end_datetime);
+            if (jsonObject.has("start_datetime") && jsonObject.has("end_datetime")) {
+                this.start_datetime = jsonObject.get("start_datetime").toString();
+                this.end_datetime = jsonObject.get("end_datetime").toString();
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "测试时间");
+                map.put(value_tag, this.start_datetime + "-" + this.end_datetime);
                 check_title.add(map);
-            }else{
-                start_datetime="";
-                end_datetime="";
+            } else {
+                start_datetime = "";
+                end_datetime = "";
+            }
+
+            if (jsonObject.has("system_mark")) {
+                this.system_mark = jsonObject.get("system_mark").toString();
+
+
+            } else {
+                this.system_mark = "unknow";
             }
 
 
-
-            if(jsonObject.has("to_number")){
+            if (jsonObject.has("to_number")) {
                 setTo_number(jsonObject.get("to_number").toString());
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"被叫号码");
-                map.put(value_tag,this.to_number);
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "被叫号码");
+                map.put(value_tag, this.to_number);
                 check_title.add(map);
 
-            }else{
+            } else {
                 setTo_number("10086");
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"被叫号码");
-                map.put(value_tag,this.to_number);
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "被叫号码");
+                map.put(value_tag, this.to_number);
                 check_title.add(map);
             }
 
 
-
-
-
-            if(jsonObject.has("url")){
+            if (jsonObject.has("url")) {
                 setUrl(jsonObject.get("url").toString());
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"测试网址");
-                map.put(value_tag,this.url);
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "测试网址");
+                map.put(value_tag, this.url);
                 check_title.add(map);
-            }else{
+            } else {
                 setUrl("https://www.baidu.com,https://weixin.qq.com/");
-                Map<String,String> map=new HashMap<String, String>();
-                map.put(lable_tag,"测试网址");
-                map.put(value_tag,this.url);
+                Map<String, String> map = new HashMap<String, String>();
+                map.put(lable_tag, "测试网址");
+                map.put(value_tag, this.url);
                 check_title.add(map);
 
             }
 
 
-        }catch(Exception e){
-            Log.e(TAG,e.toString());
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
 
         }
     }
-    public boolean isOK(String a){
-        if ("".equals(a)||a==null||a.equals("null")||a.equals("None")){
+
+    public boolean isOK(String a) {
+        if ("".equals(a) || a == null || a.equals("null") || a.equals("None")) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
 
 
-
-
-
-
-
-
-
-    public void check(information current){
-        StringBuffer sb=new StringBuffer();
+    public void check(information current) {
+        StringBuffer sb = new StringBuffer();
         /**
          * 信号强度
          */
 
-        if(isOK(this.test_name)){
-            int bsss=current.getBSSS();
-            int bsss_check=Integer.valueOf(this.test_name);
-            if(bsss_check<bsss){
-                    setBsss_ok(1);
-            }else{
+        if (isOK(this.test_name)) {
+            int bsss = current.getBSSS();
+            int bsss_check = Integer.valueOf(this.test_name);
+            if (bsss_check < bsss) {
+                setBsss_ok(1);
+            } else {
                 setBsss_ok(0);
             }
             checkItem.add("信号强度核查");
@@ -211,13 +204,13 @@ public class checkBean {
         /**
          * 网络类型核查
          */
-        if(isOK(this.network_type) && !this.network_type.equals("0")){
+        if (isOK(this.network_type) && !this.network_type.equals("0")) {
 
-            String network=current.getStrNetWork_type();
+            String network = current.getStrNetWork_type();
 
-            if(this.network_type.equals(network)){
+            if (this.network_type.equals(network)) {
                 setNetwork_type_ok(1);
-            }else{
+            } else {
                 setNetwork_type_ok(0);
             }
             checkItem.add("网络类型核查");
@@ -226,10 +219,10 @@ public class checkBean {
         /**
          * ECI核查
          */
-        if(isOK(this.ECI)){
-            if(this.ECI.equals(String.valueOf(current.getECI()))){
+        if (isOK(this.ECI)) {
+            if (this.ECI.equals(String.valueOf(current.getECI()))) {
                 setECI_ok(1);
-            }else{
+            } else {
                 setECI_ok(0);
             }
             checkItem.add("ECI核查");
@@ -238,10 +231,10 @@ public class checkBean {
         /**
          * TAC核查
          */
-        if(isOK(this.TAC)){
-            if(this.TAC.equals(String.valueOf(current.getTAC()))){
-               setTAC_ok(1);
-            }else{
+        if (isOK(this.TAC)) {
+            if (this.TAC.equals(String.valueOf(current.getTAC()))) {
+                setTAC_ok(1);
+            } else {
                 setTAC_ok(0);
             }
             checkItem.add("TAC核查");
@@ -250,22 +243,22 @@ public class checkBean {
         /**
          * 时间核查
          */
-        if(isOK(this.start_datetime) && isOK(this.end_datetime)){
+        if (isOK(this.start_datetime) && isOK(this.end_datetime)) {
 
-            start_datetime=start_datetime.replaceAll("T"," ");
-            BigInteger start_int = new BigInteger(start_datetime.replaceAll("[-\\s:]","")+"00");
+            start_datetime = start_datetime.replaceAll("T", " ");
+            BigInteger start_int = new BigInteger(start_datetime.replaceAll("[-\\s:]", "") + "00");
 
-            end_datetime=end_datetime.replaceAll("T"," ");
-            BigInteger end_int = new BigInteger(end_datetime.replaceAll("[-\\s:]","")+"00");
+            end_datetime = end_datetime.replaceAll("T", " ");
+            BigInteger end_int = new BigInteger(end_datetime.replaceAll("[-\\s:]", "") + "00");
 
             BigInteger curr_int = new BigInteger(current.getCollTime());
 
-            int one=curr_int.subtract(start_int).compareTo(BigInteger.ZERO);
-            int two=end_int.subtract(curr_int).compareTo(BigInteger.ZERO);
+            int one = curr_int.subtract(start_int).compareTo(BigInteger.ZERO);
+            int two = end_int.subtract(curr_int).compareTo(BigInteger.ZERO);
 
-            if (one>=0&&two>=0){
+            if (one >= 0 && two >= 0) {
                 setDatetime_ok(1);
-            }else{
+            } else {
                 setDatetime_ok(0);
             }
             checkItem.add("时间范围核查");
@@ -276,19 +269,21 @@ public class checkBean {
          * gps核查
          */
 
-        if(isOK(this.gps_lat)&&isOK(this.gps_lon)){
-            String gps[]=current.getGps().split(",");
-            float result[]=new float[1];
-            Location.distanceBetween(Double.valueOf(gps_lon), Double.valueOf(gps_lat), Double.valueOf(gps[0]), Double.valueOf(gps[1]),result);
-            if(result[0]>1000){
+        if (isOK(this.gps_lat) && isOK(this.gps_lon)) {
+            String gps[] = current.getGps().split(",");
+            float result[] = new float[1];
+            Location.distanceBetween(Double.valueOf(gps_lon), Double.valueOf(gps_lat), Double.valueOf(gps[0]), Double.valueOf(gps[1]), result);
+            if (result[0] > 1000) {
                 setGps_ok(0);
-            }else{
+            } else {
                 setGps_ok(1);
             }
             checkItem.add("Gps位置核查");
             checknum++;
         }
-    };
+    }
+
+    ;
 
 
     public String getTest_id() {
@@ -372,18 +367,18 @@ public class checkBean {
     }
 
     public void setTo_number(String to_number) {
-        if ("".equals(to_number) || to_number==null){
-            this.to_number="10086";
-        }else{
+        if ("".equals(to_number) || to_number == null) {
+            this.to_number = "10086";
+        } else {
             this.to_number = to_number;
         }
 
     }
 
     public void setUrl(String url) {
-        if ("".equals(url) || url==null){
-            this.url="www.baidu.com";
-        }else{
+        if ("".equals(url) || url == null) {
+            this.url = "www.baidu.com";
+        } else {
             this.url = url;
         }
 

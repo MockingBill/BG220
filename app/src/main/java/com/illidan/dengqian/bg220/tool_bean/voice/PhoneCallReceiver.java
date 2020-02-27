@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.illidan.dengqian.bg220.MainActivity;
@@ -13,6 +14,8 @@ import com.illidan.dengqian.bg220.tool_bean.SystemUtil;
 import com.illidan.dengqian.bg220.tool_bean.voice.AudioRecordManager;
 
 import java.util.MissingFormatArgumentException;
+
+import javax.security.auth.login.LoginException;
 
 /**
  * Created by hgx on 2016/6/13.
@@ -82,7 +85,11 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         if (!AudioRecordManager.isStart){
             dict_path=Environment.getExternalStorageDirectory().getAbsolutePath()+"/BG2019/";
             AudioRecordManager.destructionInstance();
-            AudioRecordManager.getInstance().startRecord(dict_path,System.currentTimeMillis()+".pcm");
+            String file_name=MainActivity.checkbean.getTest_id()+"&"+MainActivity.check_id+".pcm";
+            AudioRecordManager.getInstance().startRecord(dict_path,file_name);
+
+
+
             isRing=true;
             }
         else{
