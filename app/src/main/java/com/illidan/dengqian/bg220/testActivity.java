@@ -78,7 +78,7 @@ public class testActivity extends AppCompatActivity {
         });
         final DecimalFormat dec = new DecimalFormat("#.##");
         startButton.setText("开始网速测试");
-        tempBlackList = new HashSet<>();
+//        tempBlackList = new HashSet<>();
 
         getSpeedTestHostsHandler = new GetSpeedTestHostsHandler();
         getSpeedTestHostsHandler.start();
@@ -96,16 +96,12 @@ public class testActivity extends AppCompatActivity {
                     ImageView barImageView = (ImageView) findViewById(R.id.barImageView);
                     TextView pingTextView = (TextView) findViewById(R.id.pingTextView);
 
-
-
-
-
                     @Override
                     public void run() {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                startButton.setText("正在基于ping值选择最佳测试服务器，请稍等...");
+                                startButton.setText("正在测试...");
                             }
                         });
 
@@ -131,60 +127,6 @@ public class testActivity extends AppCompatActivity {
                                 return;
                             }
                         }
-
-                        //Find closest server
-                        HashMap<Integer, String> mapKey = getSpeedTestHostsHandler.getMapKey();
-                        HashMap<Integer, List<String>> mapValue = getSpeedTestHostsHandler.getMapValue();
-                        double selfLat = getSpeedTestHostsHandler.getSelfLat();
-                        double selfLon = getSpeedTestHostsHandler.getSelfLon();
-                        double tmp = 19349458;
-                        double dist = 0.0;
-                        int findServerIndex = 0;
-                        for (int index : mapKey.keySet()) {
-                            if (tempBlackList.contains(mapValue.get(index).get(5))) {
-                                continue;
-                            }
-
-                            Location source = new Location("Source");
-                            source.setLatitude(selfLat);
-                            source.setLongitude(selfLon);
-
-                            List<String> ls = mapValue.get(index);
-                            Location dest = new Location("Dest");
-                            dest.setLatitude(Double.parseDouble(ls.get(0)));
-                            dest.setLongitude(Double.parseDouble(ls.get(1)));
-
-                            double distance = source.distanceTo(dest);
-                            if (tmp > distance) {
-                                tmp = distance;
-                                dist = distance;
-                                findServerIndex = index;
-                            }
-                        }
-                        String uploadAddr = mapKey.get(findServerIndex);
-                        final List<String> info = mapValue.get(findServerIndex);
-                        final double distance = dist;
-
-                        if (info == null) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    startButton.setTextSize(12);
-                                    startButton.setText("获取主机地址错误，请稍后再试");
-                                }
-                            });
-                            return;
-                        }
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                startButton.setTextSize(13);
-                                startButton.setText(String.format("主机位置: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
-                               // returnButton.setEnabled(true);
-                            }
-                        });
-
                         //Init Ping graphic
                         final LinearLayout chartPing = (LinearLayout) findViewById(R.id.chartPing);
                         XYSeriesRenderer pingRenderer = new XYSeriesRenderer();
@@ -263,6 +205,24 @@ public class testActivity extends AppCompatActivity {
                         final List<Double> pingRateList = new ArrayList<>();
                         final List<Double> downloadRateList = new ArrayList<>();
                         final List<Double> uploadRateList = new ArrayList<>();
+
+
+                        //由近到远排序服务器
+                        HashMap<Integer, String> mapKey = getSpeedTestHostsHandler.getMapKey();
+                        HashMap<Integer, List<String>> mapValue = getSpeedTestHostsHandler.getMapValue();
+                        ArrayList<Integer> index_seq=new ArrayList<>();
+                        for(int j=0;j<mapValue.size();j++){
+                            int min_dist=9999999;
+                            int min_index=-1;
+                            for(int i=0;i<mapValue.size();i++){
+                                if (Integer.valueOf(mapValue.get(i).get(7))<min_dist && ! index_seq.contains(i)){
+                                    min_dist=Integer.valueOf(mapValue.get(i).get(7));
+                                    min_index=i;
+                                }
+                            }
+                            index_seq.add(min_index);
+                        }
+                        int current_num=0;
                         Boolean pingTestStarted = false;
                         Boolean pingTestFinished = false;
                         Boolean downloadTestStarted = false;
@@ -270,23 +230,61 @@ public class testActivity extends AppCompatActivity {
                         Boolean uploadTestStarted = false;
                         Boolean uploadTestFinished = false;
 
-                        //Init Test
-                        final PingTest pingTest = new PingTest(info.get(6).replace(":8080", ""), 6);
-                        final HttpDownloadTest downloadTest = new HttpDownloadTest(uploadAddr.replace(uploadAddr.split("/")[uploadAddr.split("/").length - 1], ""));
-                        final HttpUploadTest uploadTest = new HttpUploadTest(uploadAddr);
 
+                        int min_dist_index=index_seq.get(4);
+                        String uploadAddr = mapKey.get(min_dist_index);
+                        final List<String> info = mapValue.get(min_dist_index);
+                        Log.e("",info.toString());
+
+
+                        if (info == null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startButton.setTextSize(12);
+                                    startButton.setText("获取主机地址错误，请稍后再试");
+                                }
+                            });
+                            return;
+                        }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                startButton.setTextSize(13);
+                                startButton.setText(String.format("主机位置: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(Double.valueOf(info.get(7)))));
+                                // returnButton.setEnabled(true);
+                            }
+                        });
+
+
+
+
+                        //Init Test
+
+
+
+                        String host=info.get(6).toString().split(":")[0];
+                        final PingTest pingTest = new PingTest(host, 6);
+                        final HttpDownloadTest downloadTest = new HttpDownloadTest(uploadAddr.replaceAll("upload.php","download"));
+                        final HttpUploadTest uploadTest = new HttpUploadTest(uploadAddr.replaceAll("upload.php","upload"));
+                        Log.e("",host);
+                        Log.e("",uploadAddr.replaceAll("upload.php","download"));
+                        Log.e("",uploadAddr.replaceAll("upload.php","upload"));
 
                         //Tests
                         while (true) {
+
+
                             if (!pingTestStarted) {
                                 pingTest.start();
                                 pingTestStarted = true;
                             }
-                            if (pingTestFinished && !downloadTestStarted) {
+                            else if (pingTestFinished && !downloadTestStarted) {
                                 downloadTest.start();
                                 downloadTestStarted = true;
                             }
-                            if (downloadTestFinished && !uploadTestStarted) {
+                            else if (downloadTestFinished && !uploadTestStarted) {
                                 uploadTest.start();
                                 uploadTestStarted = true;
                             }
@@ -347,6 +345,7 @@ public class testActivity extends AppCompatActivity {
                                     //Failure
                                     if (downloadTest.getFinalDownloadRate() == 0) {
                                         System.out.println("下载错误...");
+
                                     } else {
                                         //Success
                                         runOnUiThread(new Runnable() {

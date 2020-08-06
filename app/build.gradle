@@ -33,5 +33,4 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.4.0")
     compile 'com.mylhyl:zxingscanner:2.1.6'
     implementation files('src/main/java/com/illidan/dengqian/bg220/test/achartengine-1.2.0.jar')
-
 }

@@ -70,8 +70,8 @@ public class HttpDownloadTest extends Thread {
         int responseCode = 0;
 
         List<String> fileUrls = new ArrayList<>();
-        fileUrls.add(fileURL + "random4000x4000.jpg");
-        fileUrls.add(fileURL + "random3000x3000.jpg");
+        fileUrls.add(fileURL + "?size=25000000");
+        fileUrls.add(fileURL + "?size=25000000");
 
         startTime = System.currentTimeMillis();
 

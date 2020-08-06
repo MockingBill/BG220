@@ -333,6 +333,23 @@
             android:gravity="center_horizontal"
             android:textSize="13dp"
             />
+
+    </LinearLayout>
+    <LinearLayout
+        android:baselineAligned="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+        <ProgressBar
+            android:visibility="gone"
+            android:id="@+id/process_bar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+             />
     </LinearLayout>
 
 
@@ -347,6 +364,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <Button
             android:layout_margin="20dp"
+            android:visibility="visible"
             android:id="@+id/singleUpload"
             android:background="@drawable/upload_button_style"
             android:layout_width="0dp"

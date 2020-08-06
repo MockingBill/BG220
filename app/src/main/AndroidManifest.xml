@@ -51,7 +51,7 @@
         android:roundIcon="@mipmap/base_station_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
-        <activity android:name=".MainActivity"
+        <activity android:name=".testActivity"
             android:theme="@style/Theme.AppCompat">
             <intent-filter>
                 <action
@@ -73,7 +73,7 @@
             android:name=".OptionsScannerActivity"
             android:label="@string/title_activity_main2"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".testActivity"
+        <activity android:name=".MainActivity"
             android:screenOrientation="portrait"/>
 
 

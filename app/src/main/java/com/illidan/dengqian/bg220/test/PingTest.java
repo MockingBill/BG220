@@ -47,12 +47,12 @@ public class PingTest extends Thread {
             BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
             String output = "";
+
             while ((line = in.readLine()) != null) {
+                Log.e("",line);
                 if (line.contains("icmp_seq")) {
                     String ss=line.split(" ")[line.split(" ").length - 2].replace("time=", "");
                     instantRtt = Double.parseDouble(ss);
-
-
                 }
                 if (line.startsWith("rtt ")) {
                     avgRtt = Double.parseDouble(line.split("/")[4]);
@@ -64,6 +64,7 @@ public class PingTest extends Thread {
 
         } catch (Exception e) {
             e.printStackTrace();
+
         }
 
         finished = true;

@@ -37,9 +37,11 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.illidan.dengqian.bg220.UI.DrawRadiusView;
 import com.illidan.dengqian.bg220.http_conn.AesAndToken;
 import com.illidan.dengqian.bg220.http_conn.connNetReq;
 import com.illidan.dengqian.bg220.http_conn.versionInfo;
@@ -189,12 +191,11 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_WIFI_STATE,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CHANGE_WIFI_STATE,
-            Manifest.permission.READ_PHONE_STATE,
+
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.INTERNET,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA,
-            Manifest.permission.INTERNET,
             Manifest.permission.VIBRATE,
             Manifest.permission.REQUEST_INSTALL_PACKAGES,
 
@@ -260,6 +261,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+//        isSIM=SystemUtil.hasSimCard();
+
 
         if (isSIM) {
             try {
@@ -269,35 +272,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, e.toString());
             }
         } else {
-            SystemUtil.showToast(context, "未检测到SIM卡");
+
         }
     }
 
-    private static final int MY_PERMISSIONS_REQUEST_CODE = 10000;
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        boolean hasPermissionDismiss = false;      //有权限没有通过
-        if (MY_PERMISSIONS_REQUEST_CODE == requestCode) {
-            for (int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] == -1) {
-                    hasPermissionDismiss = true;   //发现有未通过权限
-                    break;
-                }
-            }
-        }
-
-        if (hasPermissionDismiss) {                //如果有没有被允许的权限
-            //假如存在有没被允许的权限,可提示用户手动设置 或者不让用户继续操作
-            SystemUtil.showToast(context, "请打开全部权限重启app");
-
-        } else {
-            Log.e(TAG, "已全部授权");
-            init();
-        }
-    }
 
     /**
      * 权限初始化函数
@@ -309,18 +287,55 @@ public class MainActivity extends AppCompatActivity {
                     PackageManager.PERMISSION_GRANTED) {
                 mPermissionList.add(permissionList[i]);
             }
+            mPermissionList.add(permissionList[i]);
         }
+        StringBuffer sb = new StringBuffer();
         for (String x : mPermissionList) {
-            SystemUtil.showToast(MainActivity.this, "请打开授权:" + x);
+            switch (x) {
+                case "android.permission.CALL_PHONE":
+                    sb.append("拨打电话权限/");
+                case "android.permission.PROCESS_OUTGOING_CALLS":
+                    sb.append("去电监听权限");
+                case "android.permission.RECORD_AUDIO":
+                    sb.append("录音权限/");
+                case "android.permission.READ_CALL_LOG":
+                    sb.append("读取通话记录权限/");
+                case "android.permission.CHANGE_WIFI_MULTICAST_STATE":
+                    sb.append("WIFI组播权限/");
+                case "android.permission.ACCESS_COARSE_LOCATION":
+                    sb.append("访问地理位置权限/");
+                case "android.permission.ACCESS_FINE_LOCATION":
+                    sb.append("访问GPS权限/");
+                case "android.permission.ACCESS_WIFI_STATE":
+                    sb.append("访问WIFI状态权限/");
+                case "android.permission.ACCESS_NETWORK_STATE":
+                    sb.append("访问网络状态权限/");
+                case "android.permission.CHANGE_WIFI_STATE":
+                    sb.append("WIFI监听权限/");
+                case "android.permission.READ_PHONE_STATE":
+                    sb.append("读取通话状态权限/");
+                case "android.permission.WRITE_EXTERNAL_STORAGE":
+                    sb.append("写入外存权限/");
+                case "android.permission.INTERNET":
+                    sb.append("调用权限/");
+                case "android.permission.READ_EXTERNAL_STORAGE":
+                    sb.append("读取外存权限/");
+                case "android.permission.CAMERA":
+                    sb.append("照相机权限/");
+                case "android.permission.VIBRATE":
+                    sb.append("允许程序震动权限/");
+
+            }
 
         }
+        SystemUtil.showToast(MainActivity.this, "请手动打开授权:" + sb.toString());
 
         if (mPermissionList.size() > 0) {//有权限没有通过，需要申请
             ActivityCompat.requestPermissions(this, permissionList, mRequestCode);
         } else {
             SystemUtil.showToast(MainActivity.this, "授权完成");
-
         }
+        init();
     }
 
 
@@ -451,15 +466,16 @@ public class MainActivity extends AppCompatActivity {
                     urlList = more;
                 }
             } else if (checkbean.getUrl() != null && !"".equals(checkbean.getUrl()) && !checkbean.getUrl().contains(",")) {
+                Log.e("checkbean里", checkbean.getUrl());
                 urlList[0] = checkbean.getUrl();
             }
-
+            for (String u : urlList) {
+                Log.e("---", u);
+            }
             /**
              * 如果扫码得到的list不为空则使用扫码得到的url
              */
             Thread thread1 = new Thread() {
-
-
                 @Override
                 public void run() {
                     try {
@@ -627,7 +643,9 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_CODE_SCAN) {
             String checkJsonStr = data.getExtras().getString("ResultQRCode");
+
             if (checkJsonStr != null && !checkJsonStr.equals("0")) {
+                Log.e("", checkJsonStr);
 
                 checkbean = new checkBean(checkJsonStr);
 
@@ -649,7 +667,6 @@ public class MainActivity extends AppCompatActivity {
                 mListView.setVisibility(View.VISIBLE);
             } else {
                 SystemUtil.showToast(MainActivity.this, "扫码失败");
-
             }
         } else if (resultCode == SPEED_TEST_RETURN && requestCode == SPEEED_TEST_REEQUEST) {
             currentDownSpeed = data.getExtras().getString("speed_download");
@@ -693,6 +710,7 @@ public class MainActivity extends AppCompatActivity {
 
     String resp = "";
     String upload_warm = "";
+    ProgressBar progress = null;
 
     public void showPopWindowns() {
         contentView = LayoutInflater.from(this).inflate(R.layout.window_layout, null);
@@ -707,9 +725,11 @@ public class MainActivity extends AppCompatActivity {
         TextView ValuePhonetype = (TextView) contentView.findViewById(R.id.ValuePhonetype);
         TextView address = (TextView) contentView.findViewById(R.id.address);
 
+        progress = (ProgressBar) contentView.findViewById(R.id.process_bar);
         TextView ValueCollTime = (TextView) contentView.findViewById(R.id.ValueCollTime);
 
-        Button singleUpload = (Button) contentView.findViewById(R.id.singleUpload);
+        final Button singleUpload = (Button) contentView.findViewById(R.id.singleUpload);
+
 
         TextView upspeed = (TextView) contentView.findViewById(R.id.uploadID);
         TextView downspeed = (TextView) contentView.findViewById(R.id.downloadID);
@@ -819,13 +839,33 @@ public class MainActivity extends AppCompatActivity {
 
 
                 if ("".equals(u) || "".equals(p)) {
-                    SystemUtil.showToast(context, "请点击右上角三个点填写个人信息。");
+                    SystemUtil.showToast(context, "请点击右上角填写个人信息。");
                 } else {
                     username = u;
                     phonenumber = p;
-                    //录音
+
+                    Thread thread0 = new Thread() {
+                        public boolean isShow=false;
+                        @Override
+                        public void run() {
+                            new Handler(context.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(!isShow){
+                                        progress.setVisibility(View.VISIBLE);
+                                        isShow=true;
+                                    }else{
+                                        progress.setVisibility(View.GONE);
+                                        isShow=false;
+                                    }
+
+                                }
+                            });
+                        }
+                    };
 
 
+//录音
                     Thread thread1 = new Thread() {
                         public String upload_log_str = "0";
 
@@ -855,7 +895,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                                 if (checkBean.checkItem.size() == 0) {
-                                    sb.append("\"upload_speed\":\"" + currentUpSpeed + "\"");
+                                    sb.append("\"upload_speed\":\"" + currentUpSpeed + "\",");
                                 } else {
                                     sb.append("\"upload_speed\":\"" + currentUpSpeed + "\",");
                                 }
@@ -976,6 +1016,7 @@ public class MainActivity extends AppCompatActivity {
                                 try {
                                     String res = connNetReq.uploadFile(new File(currnt_pcm_file), getString(R.string.file_upload));
 
+                                    Log.e("", res);
                                     switch (res) {
                                         case "0":
                                             upload_wav_str = "错误0 录音上传失败";
@@ -989,32 +1030,38 @@ public class MainActivity extends AppCompatActivity {
                                 } catch (Exception e) {
                                     upload_wav_str = "错误303 app异常导致录音上传失败";
 
+                                } finally {
+                                    upload_warm = upload_warm + " " + upload_wav_str;
                                 }
                             } else {
 
 
                             }
-                            upload_warm = upload_warm + " " + upload_wav_str;
+
                             new Handler(context.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
                                     SystemUtil.showToast(MainActivity.this, upload_warm);
+                                    Log.e("", upload_warm);
+                                    if (null != popupWindow && popupWindow.isShowing() && upload_warm.contains("测试报告上传成功。")) {
+                                        popupWindow.dismiss();
+                                    }
                                     Looper.loop();
                                 }
                             });
-
-
                         }
                     };
 
 
                     try {
+//                        thread0.start();
+//                        thread0.join();
                         thread1.start();
                         thread1.join();
                         thread2.start();
                         thread2.join();
-
-
+//                        thread0.start();
+//                        thread0.join();
                     } catch (Exception e) {
                         SystemUtil.showToast(context, "报告上传进程异常");
                     }
@@ -1148,7 +1195,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) {
                     Log.e("errMain:版本更新检查，大概率是时间错误", e.toString());
-                    SystemUtil.showToast(context,"请调整手机为北京时间");
+                    Looper.prepare();
+                    Toast.makeText(context, "版本更新检查失败", Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                 }
 
                 try {

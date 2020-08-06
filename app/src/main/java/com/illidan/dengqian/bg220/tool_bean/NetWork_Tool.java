@@ -34,21 +34,16 @@ public class NetWork_Tool {
      * 启动网络测试
      */
     public void start(){
-
-
         //获取网络类型
         information.setNetwork_type(getNetWorkType());
         //获取小区相关信息
         CellRelation();
-
-
         //获取手机型号等
         StringBuffer phoneType = new StringBuffer();
         phoneType.append(SystemUtil.getDeviceBrand() + ";");
         phoneType.append(SystemUtil.getSystemModel() + ";");
         phoneType.append(SystemUtil.getIMEI(MainActivity.context));
         information.setPhoneType(phoneType.toString());
-
     }
 
 
@@ -56,7 +51,6 @@ public class NetWork_Tool {
     public NetWork_Tool(TelephonyManager tm){
         OnlyTeleMan=tm;
         information=new information();
-
     }
     public void CellRelation(){
         int cid=-1;

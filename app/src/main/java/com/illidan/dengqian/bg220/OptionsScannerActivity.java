@@ -53,18 +53,11 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_scanner_options);
-
         mScannerView = (ScannerView) findViewById(R.id.scanner_view);
-
         mScannerView.setOnScannerCompletionListener(this);
-
-
-
         ScannerOptions.Builder builder = new ScannerOptions.Builder();
-        builder
-                .setFrameStrokeColor(Color.RED)
+        builder.setFrameStrokeColor(Color.RED)
                 .setFrameStrokeWidth(1.5f)
-
                 .setViewfinderCallback(new ScannerOptions.ViewfinderCallback() {
                     @Override
                     public void onDraw(View view, Canvas canvas, Rect frame) {
@@ -72,10 +65,9 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
                         canvas.drawBitmap(bmp, frame.right / 2, frame.top - bmp.getHeight(), null);
                     }
                 })
-
                 .setScanMode(BarcodeFormat.QR_CODE)
                 .setTipText("扫码获取拨测要求")
-                .setTipTextSize(22)
+                .setTipTextSize(30)
                 .setTipTextColor(getResources().getColor(R.color.arc_blue))
 //                .setCameraZoomRatio(2)
         ;
@@ -94,10 +86,6 @@ public class OptionsScannerActivity extends Activity implements OnScannerComplet
                 mScannerView.toggleLight(!isFlaOpen);
             }
         });
-
-
-
-
         mScannerView.setScannerOptions(builder.build());
     }
     public static boolean isFlaOpen=false;

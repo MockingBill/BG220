@@ -79,6 +79,7 @@ public class PickPictureTotalActivity extends BasicActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_pick_picture_total);
         mListView = (ListView) findViewById(R.id.pick_picture_total_listView);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

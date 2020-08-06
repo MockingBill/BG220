@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class checkBean {
     public static final String TAG = "checkBean_err";
@@ -377,12 +379,35 @@ public class checkBean {
 
     public void setUrl(String url) {
         if ("".equals(url) || url == null) {
-            this.url = "www.baidu.com";
+            this.url = "https://www.baidu.com/";
         } else {
-            this.url = url;
+            if(url.contains(",")){
+                StringBuffer sb=new StringBuffer();
+                String []sa=url.split(",");
+                for(int i=0;i<sa.length;i++){
+                    if(isHttpUrl(sa[i])){
+                        sb.append(sa[i]);
+                        if(i<(sa.length-1)){
+                            sb.append(",");
+                        }
+                    };
+                }
+                if("".equals(sb.toString())){
+                    this.url="https://www.baidu.com/";
+                }else{
+                    this.url=sb.toString();
+                }
+
+            }else{
+                if(isHttpUrl(url)){
+                    this.url = url;
+                }else{
+                    this.url="https://www.baidu.com/";
+                };
+            }
         }
 
-        this.url = url;
+
     }
 
 
@@ -441,4 +466,23 @@ public class checkBean {
     public void setSystem_mark(String system_mark) {
         this.system_mark = system_mark;
     }
+
+    /**
+     * 判断字符串是否为URL
+     * @param urls 需要判断的String类型url
+     * @return true:是URL；false:不是URL
+     */
+    public static boolean isHttpUrl(String urls) {
+        boolean isurl = false;
+        String regex = "(^(http|https)+://).*";//设置正则表达式
+
+        Pattern pat = Pattern.compile(regex.trim());//对比
+        Matcher mat = pat.matcher(urls.trim());
+        isurl = mat.matches();//判断是否匹配
+        if (isurl) {
+            isurl = true;
+        }
+        return isurl;
+    }
+
 }
