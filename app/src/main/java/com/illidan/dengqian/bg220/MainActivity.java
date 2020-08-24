@@ -328,8 +328,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        SystemUtil.showToast(MainActivity.this, "请手动打开授权:" + sb.toString());
-
         if (mPermissionList.size() > 0) {//有权限没有通过，需要申请
             ActivityCompat.requestPermissions(this, permissionList, mRequestCode);
         } else {
@@ -337,8 +335,6 @@ public class MainActivity extends AppCompatActivity {
         }
         init();
     }
-
-
     /**
      * 逻辑组件初始化
      */
@@ -638,9 +634,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
-
-        Log.e("其他activity返回", "回来了requestCode:" + String.valueOf(requestCode) + "resultCode:" + String.valueOf(resultCode));
-        super.onActivityResult(requestCode, resultCode, data);
+    super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_CODE_SCAN) {
             String checkJsonStr = data.getExtras().getString("ResultQRCode");
 
